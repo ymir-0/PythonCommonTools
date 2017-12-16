@@ -13,7 +13,7 @@ setuptools.setup(
     name="PythonCommonTools",
     version=__version__,
     description="common tolls for Python",
-    packages=[""],
+    packages=["pythoncommontools.configurationLoader"],
     install_requires=["psutil"],
     classifiers=[
         'Programming Language :: Python :: 3',
@@ -21,3 +21,4 @@ setuptools.setup(
     # py_modules=['helloworldpython3.HelloWorldPython3'],
     #package_dir=["pythoncommontools"],
 )
+#from pythoncommontools.configurationLoader
