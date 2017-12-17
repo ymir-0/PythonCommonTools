@@ -24,13 +24,15 @@ class simpleBoolean():
 class simpleNumeric():
     # sample function
     def sampleFunction(self, externalNumeric):
-        return self.sampleInt + self.sampleIn + self.sampleInt + externalNumeric
+        return self.sampleInt + self.sampleFloat + self.sampleComplex + externalNumeric
     # contructor
     def __init__(self, sampleInt=0, sampleFloat=0.0, sampleComplex=complex(0, 0)):
         self.sampleInt=sampleInt
         self.sampleFloat=sampleFloat
         self.sampleComplex=sampleComplex
 # define test
+#TODO: use the 'objectComparison' method defined in 'objectUtil' ?
+#I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
 class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe boolean
     def testSimpleBoolean(self):

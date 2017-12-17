@@ -10,11 +10,32 @@ from json import JSONDecoder , JSONEncoder , dumps , loads
 from sys import maxsize
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
+# unserializable attributes
+@unique
+class UnserializableAttributes( Enum ):
+    COMPLEXE = type(complex(0,0))
 # encryption markup
 @unique
 class EncryptionMarkup( Enum ):
-    class_ = "className"
-    module = "moduleName"
+    CLASS = "className"
+    MODULE = "moduleName"
+    SURROGATE_TYPE = "surrogateType"
+# serializable types surrogate
+class ComplexeSurrogate():
+    def convertToFinalObject(self,jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        self.__dict__.update(dictObject)
+        # convert to final type
+        finalObject=complex(self.real,self.imaginary)
+        return finalObject
+    def __init__(self,originalObject=complex(0,0)):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, ComplexeSurrogate.__name__)
+        self.real=originalObject.real
+        self.imaginary=originalObject.imag
+        pass
+    pass
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -26,9 +47,17 @@ class ComplexJsonEncoder(  ):
         logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = argsStr )
         # upgade object
         ugradedObject=deepcopy(rawObject)
-        setattr(ugradedObject, EncryptionMarkup.class_.value, rawObject.__class__.__name__)
-        setattr(ugradedObject, EncryptionMarkup.module.value, rawObject.__module__)
-        # complex type
+        # search for all unserializable attributes
+        for attributeName, attributeValue in ugradedObject.__dict__.items():
+            # complex type
+            if type(attributeValue)==UnserializableAttributes.COMPLEXE.value:
+                surrogateValue=ComplexeSurrogate(attributeValue)
+                jsonObject = dumps(surrogateValue.__dict__)
+                setattr(ugradedObject, attributeName, jsonObject)
+            pass
+        # add module & class references
+        setattr(ugradedObject, EncryptionMarkup.CLASS.value, rawObject.__class__.__name__)
+        setattr(ugradedObject, EncryptionMarkup.MODULE.value, rawObject.__module__)
         # encode object
         jsonObject = dumps(ugradedObject.__dict__)
         # logger output
@@ -48,20 +77,33 @@ class ComplexJsonDecoder(  ):
         # initiate instantiated object
         instantiatedObject=dictObject
         # warn if was not encoded with 'ComplexJsonEncoder'
-        if EncryptionMarkup.class_.value not in dictObject or EncryptionMarkup.module.value not in dictObject:
+        if EncryptionMarkup.CLASS.value not in dictObject or EncryptionMarkup.MODULE.value not in dictObject:
             logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
         # otherwise, continue decoding
         else:
             # load module
-            moduleName=dictObject[EncryptionMarkup.module.value]
+            moduleName=dictObject[EncryptionMarkup.MODULE.value]
             importedModule=import_module(moduleName)
             # load class
-            className=dictObject[EncryptionMarkup.class_.value]
+            className=dictObject[EncryptionMarkup.CLASS.value]
             loadedClass=getattr(importedModule,className)
             # instanciate object
             instantiatedObject=loadedClass()
             # update class attributs
             instantiatedObject.__dict__.update(dictObject)
+            # search for all loaded attributes
+            for attributeName, attributeValue in instantiatedObject.__dict__.items():
+                # search the unserializable ones
+                if type(attributeValue)==str and EncryptionMarkup.SURROGATE_TYPE.value in attributeValue:
+                    # complex type
+                    if ComplexeSurrogate.__name__ in attributeValue:
+                        surrogateObject=ComplexeSurrogate()
+                    # replace in instanciated object
+                    instantiatedAttribute=surrogateObject.convertToFinalObject(attributeValue)
+                    setattr(instantiatedObject, attributeName, instantiatedAttribute)
+                    pass
+                pass
+            pass
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
         # return instantiated object
