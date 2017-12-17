@@ -33,9 +33,10 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
         # decode it
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
-        # print results
-        print("type="+str(type(decodedObject)))
-        print("value="+str(decodedObject))
+        # check result
+        self.assertEqual(type(simpleBoolean()),type(decodedObject),"types do not match")
+        self.assertTrue(testObject.sampleBoolean,"attribute does not match")
+        self.assertFalse(testObject.sampleFunction(False),"method does not match")
     pass
 # run test
 if __name__ == '__main__':

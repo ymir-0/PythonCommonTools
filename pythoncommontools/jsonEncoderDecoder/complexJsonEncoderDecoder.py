@@ -104,12 +104,16 @@ class ComplexJsonDecoder(  ):
             moduleName=dictObject[EncryptionMarkup.module.value]
             importedModule=import_module(moduleName)
             # load class
-            pass
+            className=dictObject[EncryptionMarkup.class_.value]
+            loadedClass=getattr(importedModule,className)
+            # instanciate object
+            instantiatedObject=loadedClass()
+            # update class attributs
+            instantiatedObject.__dict__.update(dictObject)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
         # return instantiated object
         return instantiatedObject
-    pass
 #------------------------------------------------
 class ComplexJsonDecoder_ORIGINAL( JSONDecoder ):
     # methods
