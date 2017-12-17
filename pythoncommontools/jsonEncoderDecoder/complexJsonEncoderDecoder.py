@@ -28,6 +28,7 @@ class ComplexJsonEncoder(  ):
         ugradedObject=deepcopy(rawObject)
         setattr(ugradedObject, EncryptionMarkup.class_.value, rawObject.__class__.__name__)
         setattr(ugradedObject, EncryptionMarkup.module.value, rawObject.__module__)
+        # complex type
         # encode object
         jsonObject = dumps(ugradedObject.__dict__)
         # logger output
