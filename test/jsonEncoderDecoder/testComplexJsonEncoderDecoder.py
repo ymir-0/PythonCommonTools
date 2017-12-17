@@ -6,7 +6,7 @@ from os import sep
 from os.path import join, realpath
 from pythoncommontools.configurationLoader import configurationLoader
 from pythoncommontools.logger import logger
-from pythoncommontools.jsonEncoderDecoder.complexJsonEncoderDecoder import ComplexJsonEncoder
+from pythoncommontools.jsonEncoderDecoder.complexJsonEncoderDecoder import ComplexJsonEncoder,ComplexJsonDecoder
 # contants
 CURRENT_DIRECTORY = realpath(__file__).rsplit(sep, 1)[0]
 CONFIGURATION_FILE=join(CURRENT_DIRECTORY,"..","..","pythoncommontools","conf","pythoncommontools.conf")
@@ -31,8 +31,11 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         testObject=simpleBoolean(True)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
-        print(testJson)
-        pass
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # print results
+        print("type="+str(type(decodedObject)))
+        print("value="+str(decodedObject))
     pass
 # run test
 if __name__ == '__main__':

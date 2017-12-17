@@ -84,6 +84,31 @@ class ComplexJsonEncoder( JSONEncoder ):
 		# return JSON encoding
 		return encodingDict
 # decode from JSON to objects
+class ComplexJsonDecoder(  ):
+	@staticmethod
+	def loadComplexObject ( jsonObject):
+		# logger context
+		argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadComplexObject ).parameters, locals() )
+		# logger input
+		logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
+		# load json object into dictionnary
+		dictObject = loads(jsonObject)
+		# initiate instantiated object
+		instantiatedObject=dictObject
+		# warn if was not encoded with 'ComplexJsonEncoder'
+		if EncryptionMarkup.class_.value not in dictObject or EncryptionMarkup.module.value not in dictObject:
+			logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
+		# otherwise, continue decoding
+		else:
+			# load module
+			moduleName=dictObject[EncryptionMarkup.module.value]
+			importedModule=import_module(moduleName)
+			pass
+		# logger output
+		logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
+		# return instantiated object
+		return instantiatedObject
+	pass
 #------------------------------------------------
 class ComplexJsonDecoder_ORIGINAL( JSONDecoder ):
 	# methods
