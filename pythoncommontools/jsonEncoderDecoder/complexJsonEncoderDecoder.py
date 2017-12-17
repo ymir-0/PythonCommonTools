@@ -84,7 +84,8 @@ class ComplexJsonEncoder( JSONEncoder ):
 		# return JSON encoding
 		return encodingDict
 # decode from JSON to objects
-class ComplexJsonDecoder( JSONDecoder ):
+#------------------------------------------------
+class ComplexJsonDecoder_ORIGINAL( JSONDecoder ):
 	# methods
 	@staticmethod
 	def recursiveConvertAttribut ( objectToInspect, convertionType, recursiveAttributsIterable ):
