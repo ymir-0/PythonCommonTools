@@ -10,32 +10,29 @@ from json import JSONDecoder , JSONEncoder , dumps , loads
 from sys import maxsize
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
-# unserializable attributes
-@unique
-class UnserializableAttributes( Enum ):
-    COMPLEXE = type(complex(0,0))
 # encryption markup
 @unique
 class EncryptionMarkup( Enum ):
     CLASS = "className"
     MODULE = "moduleName"
     SURROGATE_TYPE = "surrogateType"
-# serializable types surrogate
+# serializable surrogate types
+#TODO: use a super class for all surrogate types ?
 class ComplexeSurrogate():
-    def convertToFinalObject(self,jsonEncryption):
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
         # load it in a dictionnary
         dictObject = loads(jsonEncryption)
         # update the attributes
-        self.__dict__.update(dictObject)
+        surrogateObject=ComplexeSurrogate()
+        surrogateObject.__dict__.update(dictObject)
         # convert to final type
-        finalObject=complex(self.real,self.imaginary)
+        finalObject=complex(surrogateObject.real,surrogateObject.imaginary)
         return finalObject
     def __init__(self,originalObject=complex(0,0)):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, ComplexeSurrogate.__name__)
         self.real=originalObject.real
         self.imaginary=originalObject.imag
-        pass
-    pass
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -50,7 +47,7 @@ class ComplexJsonEncoder(  ):
         # search for all unserializable attributes
         for attributeName, attributeValue in ugradedObject.__dict__.items():
             # complex type
-            if type(attributeValue)==UnserializableAttributes.COMPLEXE.value:
+            if type(attributeValue)==complex:
                 surrogateValue=ComplexeSurrogate(attributeValue)
                 jsonObject = dumps(surrogateValue.__dict__)
                 setattr(ugradedObject, attributeName, jsonObject)
@@ -97,9 +94,9 @@ class ComplexJsonDecoder(  ):
                 if type(attributeValue)==str and EncryptionMarkup.SURROGATE_TYPE.value in attributeValue:
                     # complex type
                     if ComplexeSurrogate.__name__ in attributeValue:
-                        surrogateObject=ComplexeSurrogate()
+                        surrogateClass=ComplexeSurrogate
                     # replace in instanciated object
-                    instantiatedAttribute=surrogateObject.convertToFinalObject(attributeValue)
+                    instantiatedAttribute=surrogateClass.convertToFinalObject(attributeValue)
                     setattr(instantiatedObject, attributeName, instantiatedAttribute)
                     pass
                 pass

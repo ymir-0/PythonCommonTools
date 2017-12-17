@@ -12,7 +12,7 @@ CURRENT_DIRECTORY = realpath(__file__).rsplit(sep, 1)[0]
 CONFIGURATION_FILE=join(CURRENT_DIRECTORY,"..","..","pythoncommontools","conf","pythoncommontools.conf")
 # load configuration
 configurationLoader.loadConfiguration(CONFIGURATION_FILE)
-logger.loadLogger("MinstDataSetExtractor", CONFIGURATION_FILE)
+logger.loadLogger("surrogate types", CONFIGURATION_FILE)
 # create sample classes to encode/decode
 class simpleBoolean():
     # sample function
