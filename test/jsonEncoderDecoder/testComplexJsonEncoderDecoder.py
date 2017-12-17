@@ -14,14 +14,14 @@ CONFIGURATION_FILE=join(CURRENT_DIRECTORY,"..","..","pythoncommontools","conf","
 configurationLoader.loadConfiguration(CONFIGURATION_FILE)
 logger.loadLogger("surrogate types", CONFIGURATION_FILE)
 # create sample classes to encode/decode
-class sampleBoolean():
+class SampleBoolean():
     # sample function
     def sampleFunction(self, externalBoolean):
         return self.sampleBoolean and externalBoolean
     # contructor
     def __init__(self, sampleBoolean=False):
         self.sampleBoolean=sampleBoolean
-class sampleNumeric():
+class SampleNumeric():
     # sample function
     def sampleFunction(self, externalNumeric):
         return self.sampleInt + self.sampleFloat + self.sampleComplex + externalNumeric
@@ -30,7 +30,7 @@ class sampleNumeric():
         self.sampleInt=sampleInt
         self.sampleFloat=sampleFloat
         self.sampleComplex=sampleComplex
-class sampleSequence():
+class SampleSequence():
     # sample function
     def sampleFunction(self):
         return len(self.sampleList) + len(self.sampleTuple) + len(self.sampleRange)
@@ -39,6 +39,13 @@ class sampleSequence():
         self.sampleList=sampleList
         self.sampleTuple=sampleTuple
         self.sampleRange=sampleRange
+class SampleString():
+    # sample function
+    def sampleFunction(self):
+        return len(self.sampleString)
+    # contructor
+    def __init__(self, sampleString=""):
+        self.sampleString=sampleString
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -46,13 +53,13 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe boolean
     def testSampleBoolean(self):
         # create object
-        testObject=sampleBoolean(True)
+        testObject=SampleBoolean(True)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
         # decode it
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
-        self.assertEqual(type(sampleBoolean()),type(decodedObject),"types do not match")
+        self.assertEqual(SampleBoolean,type(decodedObject),"types do not match")
         self.assertTrue(testObject.sampleBoolean,"attribute does not match")
         self.assertFalse(testObject.sampleFunction(False),"method does not match")
     # test simpe numeric
@@ -61,13 +68,13 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         sampleInt = 1
         sampleFloat = 2.3
         sampleComplex = complex(4, 5)
-        testObject=sampleNumeric(sampleInt,sampleFloat,sampleComplex)
+        testObject=SampleNumeric(sampleInt,sampleFloat,sampleComplex)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
         # decode it
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
-        self.assertEqual(type(sampleNumeric()),type(decodedObject),"types do not match")
+        self.assertEqual(SampleNumeric,type(decodedObject),"types do not match")
         self.assertEqual(sampleInt,testObject.sampleInt,"attribute sampleInt does not match")
         self.assertEqual(sampleFloat,testObject.sampleFloat,"attribute sampleFloat does not match")
         self.assertEqual(sampleComplex,testObject.sampleComplex,"attribute sampleComplex does not match")
@@ -80,17 +87,31 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         sampleList = [0,1.2]
         sampleTuple = (3,4.5)
         sampleRange = range(1,10)
-        testObject=sampleSequence(sampleList,sampleTuple,sampleRange)
+        testObject=SampleSequence(sampleList,sampleTuple,sampleRange)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
         # decode it
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
-        self.assertEqual(type(sampleSequence()),type(decodedObject),"types do not match")
+        self.assertEqual(SampleSequence,type(decodedObject),"types do not match")
         self.assertEqual(sampleList,testObject.sampleList,"attribute sampleList does not match")
         self.assertEqual(sampleTuple,testObject.sampleTuple,"attribute sampleTuple does not match")
         self.assertEqual(sampleRange,testObject.sampleRange,"attribute sampleRange does not match")
         expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
+        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+    # test simpe string
+    def testSampleString(self):
+        # create object
+        sampleStringAttribute = "hello world!"
+        testObject=SampleString(sampleStringAttribute)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(SampleString,type(decodedObject),"types do not match")
+        self.assertEqual(sampleStringAttribute,testObject.sampleString,"attribute does not match")
+        expectedResult=len(sampleStringAttribute)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
