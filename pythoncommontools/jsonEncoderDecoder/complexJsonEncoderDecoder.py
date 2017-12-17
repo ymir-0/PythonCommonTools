@@ -50,6 +50,7 @@ class RangeSurrogate():
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, RangeSurrogate.__name__)
         self.start=originalObject[0]
         self.end=originalObject[-1]+1 # WARNING : range end is exclusive
+#TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
