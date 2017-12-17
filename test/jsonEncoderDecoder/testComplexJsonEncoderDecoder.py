@@ -30,6 +30,15 @@ class simpleNumeric():
         self.sampleInt=sampleInt
         self.sampleFloat=sampleFloat
         self.sampleComplex=sampleComplex
+class simpleSequence():
+    # sample function
+    def sampleFunction(self):
+        return len(self.sampleList) + len(self.sampleTuple) + len(self.sampleRange)
+    # contructor
+    def __init__(self, sampleList=list(), sampleTuple=tuple(), sampleRange=range(0, 0)):
+        self.sampleList=sampleList
+        self.sampleTuple=sampleTuple
+        self.sampleRange=sampleRange
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -65,6 +74,24 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         externalNumeric=6
         expectedResult=sampleInt+sampleFloat+sampleComplex+externalNumeric
         self.assertEqual(expectedResult,testObject.sampleFunction(externalNumeric),"method does not match")
+    # test simpe sequence
+    def testSimpleSequence(self):
+        # create object
+        sampleList = [0,1.2]
+        sampleTuple = (3,4.5)
+        sampleRange = range(1,10)
+        testObject=simpleSequence(sampleList,sampleTuple,sampleRange)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(type(simpleSequence()),type(decodedObject),"types do not match")
+        self.assertEqual(sampleList,testObject.sampleList,"attribute sampleList does not match")
+        self.assertEqual(sampleTuple,testObject.sampleTuple,"attribute sampleTuple does not match")
+        self.assertEqual(sampleRange,testObject.sampleRange,"attribute sampleRange does not match")
+        expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
+        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
 if __name__ == '__main__':

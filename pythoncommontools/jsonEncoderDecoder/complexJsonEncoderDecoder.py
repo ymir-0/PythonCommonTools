@@ -10,6 +10,8 @@ from json import JSONDecoder , JSONEncoder , dumps , loads
 from sys import maxsize
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
+# constants
+UNSERIALIZABLE_TYPES=(complex,range)
 # encryption markup
 @unique
 class EncryptionMarkup( Enum ):
@@ -33,6 +35,21 @@ class ComplexeSurrogate():
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, ComplexeSurrogate.__name__)
         self.real=originalObject.real
         self.imaginary=originalObject.imag
+class RangeSurrogate():
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        surrogateObject=RangeSurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        finalObject=range(surrogateObject.start,surrogateObject.end)
+        return finalObject
+    def __init__(self,originalObject=range(0,1)):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, RangeSurrogate.__name__)
+        self.start=originalObject[0]
+        self.end=originalObject[-1]+1 # WARNING : range end is exclusive
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -44,13 +61,19 @@ class ComplexJsonEncoder(  ):
         logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = argsStr )
         # upgade object
         ugradedObject=deepcopy(rawObject)
-        # search for all unserializable attributes
+        # in all attributes
         for attributeName, attributeValue in ugradedObject.__dict__.items():
-            # complex type
-            if type(attributeValue)==complex:
-                surrogateValue=ComplexeSurrogate(attributeValue)
-                jsonObject = dumps(surrogateValue.__dict__)
-                setattr(ugradedObject, attributeName, jsonObject)
+            # search for all unserializable ones
+            if type(attributeValue) in UNSERIALIZABLE_TYPES:
+               # complex type
+               if type(attributeValue)==complex:
+                    surrogateValue=ComplexeSurrogate(attributeValue)
+               # range type
+               if type(attributeValue)==range:
+                    surrogateValue=RangeSurrogate(attributeValue)
+               # execute surrogate encryption
+               jsonObject = dumps(surrogateValue.__dict__)
+               setattr(ugradedObject, attributeName, jsonObject)
             pass
         # add module & class references
         setattr(ugradedObject, EncryptionMarkup.CLASS.value, rawObject.__class__.__name__)
@@ -88,13 +111,16 @@ class ComplexJsonDecoder(  ):
             instantiatedObject=loadedClass()
             # update class attributs
             instantiatedObject.__dict__.update(dictObject)
-            # search for all loaded attributes
+            # in all loaded attributes
             for attributeName, attributeValue in instantiatedObject.__dict__.items():
                 # search the unserializable ones
                 if type(attributeValue)==str and EncryptionMarkup.SURROGATE_TYPE.value in attributeValue:
                     # complex type
                     if ComplexeSurrogate.__name__ in attributeValue:
                         surrogateClass=ComplexeSurrogate
+                    # range type
+                    if RangeSurrogate.__name__ in attributeValue:
+                        surrogateClass=RangeSurrogate
                     # replace in instanciated object
                     instantiatedAttribute=surrogateClass.convertToFinalObject(attributeValue)
                     setattr(instantiatedObject, attributeName, instantiatedAttribute)
