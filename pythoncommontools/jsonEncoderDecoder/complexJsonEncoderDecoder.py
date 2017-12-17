@@ -8,16 +8,65 @@ from importlib import import_module
 from inspect import signature
 from json import JSONDecoder , JSONEncoder , dumps , loads
 from sys import maxsize
-
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
 # encryption markup
 @unique
 class EncryptionMarkup( Enum ):
-    class_ = "__class__"
-    module = "__module__"
+    class_ = "className"
+    module = "moduleName"
 # encode from objects to JSON
-class ComplexJsonEncoder( JSONEncoder ):
+class ComplexJsonEncoder(  ):
+    # methods
+    @staticmethod
+    def dumpComplexObject ( rawObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpComplexObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = argsStr )
+        # upgade object
+        ugradedObject=deepcopy(rawObject)
+        setattr(ugradedObject, EncryptionMarkup.class_.value, rawObject.__class__.__name__)
+        setattr(ugradedObject, EncryptionMarkup.module.value, rawObject.__module__)
+        # encode object
+        jsonObject = dumps(ugradedObject.__dict__)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = jsonObject )
+        # return
+        return jsonObject
+# decode from JSON to objects
+class ComplexJsonDecoder(  ):
+    @staticmethod
+    def loadComplexObject ( jsonObject):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadComplexObject ).parameters, locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
+        # load json object into dictionnary
+        dictObject = loads(jsonObject)
+        # initiate instantiated object
+        instantiatedObject=dictObject
+        # warn if was not encoded with 'ComplexJsonEncoder'
+        if EncryptionMarkup.class_.value not in dictObject or EncryptionMarkup.module.value not in dictObject:
+            logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
+        # otherwise, continue decoding
+        else:
+            # load module
+            moduleName=dictObject[EncryptionMarkup.module.value]
+            importedModule=import_module(moduleName)
+            # load class
+            className=dictObject[EncryptionMarkup.class_.value]
+            loadedClass=getattr(importedModule,className)
+            # instanciate object
+            instantiatedObject=loadedClass()
+            # update class attributs
+            instantiatedObject.__dict__.update(dictObject)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
+        # return instantiated object
+        return instantiatedObject
+#------------------------------------------------
+class ComplexJsonEncoder_ORIGINAL( JSONEncoder ):
     # methods
     @staticmethod
     def setBrokerObject ( objectRaw ):
@@ -83,38 +132,6 @@ class ComplexJsonEncoder( JSONEncoder ):
                                      message = encodingDict )
         # return JSON encoding
         return encodingDict
-# decode from JSON to objects
-class ComplexJsonDecoder(  ):
-    @staticmethod
-    def loadComplexObject ( jsonObject):
-        # logger context
-        argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadComplexObject ).parameters, locals() )
-        # logger input
-        logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
-        # load json object into dictionnary
-        dictObject = loads(jsonObject)
-        # initiate instantiated object
-        instantiatedObject=dictObject
-        # warn if was not encoded with 'ComplexJsonEncoder'
-        if EncryptionMarkup.class_.value not in dictObject or EncryptionMarkup.module.value not in dictObject:
-            logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
-        # otherwise, continue decoding
-        else:
-            # load module
-            moduleName=dictObject[EncryptionMarkup.module.value]
-            importedModule=import_module(moduleName)
-            # load class
-            className=dictObject[EncryptionMarkup.class_.value]
-            loadedClass=getattr(importedModule,className)
-            # instanciate object
-            instantiatedObject=loadedClass()
-            # update class attributs
-            instantiatedObject.__dict__.update(dictObject)
-        # logger output
-        logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
-        # return instantiated object
-        return instantiatedObject
-#------------------------------------------------
 class ComplexJsonDecoder_ORIGINAL( JSONDecoder ):
     # methods
     @staticmethod

@@ -19,10 +19,17 @@ class simpleBoolean():
     def sampleFunction(self, externalBoolean):
         return self.sampleBoolean and externalBoolean
     # contructor
-    def __init__(self, sampleBoolean=None):
+    def __init__(self, sampleBoolean=False):
         self.sampleBoolean=sampleBoolean
-        pass
-    pass
+class simpleNumeric():
+    # sample function
+    def sampleFunction(self, externalNumeric):
+        return self.sampleInt + self.sampleIn + self.sampleInt + externalNumeric
+    # contructor
+    def __init__(self, sampleInt=0, sampleFloat=0.0, sampleComplexe=complex(0, 0)):
+        self.sampleInt=sampleInt
+        self.sampleFloat=sampleFloat
+        self.sampleComplexe=sampleComplexe
 # define test
 class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe boolean
@@ -37,6 +44,27 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(type(simpleBoolean()),type(decodedObject),"types do not match")
         self.assertTrue(testObject.sampleBoolean,"attribute does not match")
         self.assertFalse(testObject.sampleFunction(False),"method does not match")
+    '''
+    # test simpe numeric
+    def testSimpleNumeric(self):
+        # create object
+        sampleInt = 1
+        sampleFloat = 2.3
+        sampleComplexe = complex(4, 5)
+        testObject=simpleNumeric(sampleInt,sampleFloat,sampleComplexe)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(type(simpleNumeric()),type(decodedObject),"types do not match")
+        self.assertEqual(sampleInt,testObject.sampleInt,"attribute sampleInt does not match")
+        self.assertEqual(sampleFloat,testObject.sampleFloat,"attribute sampleFloat does not match")
+        self.assertEqual(sampleComplexe,testObject.sampleComplexe,"attribute sampleComplexe does not match")
+        externalNumeric=6
+        expectedResult=sampleInt+sampleFloat+sampleComplexe+externalNumeric
+        self.assertEqual(expectedResult,testObject.sampleFunction(externalNumeric),"method does not match")
+    '''
     pass
 # run test
 if __name__ == '__main__':
