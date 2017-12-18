@@ -95,7 +95,6 @@ class ComplexJsonDecoder(  ):
         logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
         # load json object into dictionnary
         dictObject = loads(jsonObject)
-        # TODO : remove markups
         # initiate instantiated object
         instantiatedObject=dictObject
         # warn if was not encoded with 'ComplexJsonEncoder'
@@ -109,6 +108,9 @@ class ComplexJsonDecoder(  ):
             # load class
             className=dictObject[EncryptionMarkup.CLASS.value]
             loadedClass=getattr(importedModule,className)
+            # remove markups
+            del dictObject[EncryptionMarkup.MODULE.value]
+            del dictObject[EncryptionMarkup.CLASS.value]
             # instanciate object
             instantiatedObject=loadedClass()
             # update class attributs
