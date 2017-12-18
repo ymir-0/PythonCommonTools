@@ -2,7 +2,7 @@
 # @see : https://pymotw.com/2/json/ (it is for python 2, but it is adaptable for python 3)
 # imports
 from collections import Iterable
-from copy import deepcopy
+from copy import deepcopy, copy
 from enum import Enum , unique
 from importlib import import_module
 from inspect import signature
@@ -62,7 +62,36 @@ class BytesSurrogate():
     def __init__(self,originalObject=bytes()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytesSurrogate.__name__)
         self.integers=list(originalObject)
-UNSERIALIZABLE_TYPES={complex:ComplexeSurrogate,range:RangeSurrogate,bytes:BytesSurrogate}
+class BytearraySurrogate():
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        surrogateObject=BytearraySurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        finalObject=bytearray(surrogateObject.integers)
+        return finalObject
+    def __init__(self,originalObject=bytearray()):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytearraySurrogate.__name__)
+        self.integers=list(originalObject)
+class MemoryviewSurrogate():
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        surrogateObject=MemoryviewSurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        # WARNING : memory view requires bytes as input
+        finalObject=memoryview(bytes(surrogateObject.integers))
+        return finalObject
+    def __init__(self,originalObject=memoryview(b'')):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, MemoryviewSurrogate.__name__)
+        self.integers=list(originalObject)
+UNSERIALIZABLE_TYPES={complex:ComplexeSurrogate,range:RangeSurrogate,bytes:BytesSurrogate,bytearray:BytearraySurrogate,memoryview:MemoryviewSurrogate}
 #TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
@@ -74,7 +103,8 @@ class ComplexJsonEncoder(  ):
         # logger input
         logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = argsStr )
         # upgade object
-        ugradedObject=deepcopy(rawObject)
+        # WARNING : can not 'deep copy' a 'memeory view'
+        ugradedObject = copy(rawObject)
         # in all attributes
         for attributeName, attributeValue in ugradedObject.__dict__.items():
             # search for all unserializable ones
