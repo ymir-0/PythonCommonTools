@@ -48,8 +48,8 @@ class SampleString():
         self.sampleString=sampleString
 class SampleBinary():
     # sample function
-    #def sampleFunction(self):
-    #    return len(self.sampleList) + len(self.sampleTuple) + len(self.sampleRange)
+    def sampleFunction(self):
+        return len(self.sampleBytes) + len(self.sampleBytearray) + len(self.sampleMemoryview)
     # contructor
     def __init__(self, sampleBytes=bytes(), sampleBytearray=bytearray(), sampleMemoryview=memoryview(b'')):
         self.sampleBytes=sampleBytes
@@ -140,8 +140,8 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleBytes,testObject.sampleBytes,"attribute sampleBytes does not match")
         self.assertEqual(sampleBytearray,testObject.sampleBytearray,"attribute sampleBytearray does not match")
         self.assertEqual(sampleMemoryview,testObject.sampleMemoryview,"attribute sampleMemoryview does not match")
-        #expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
-        #self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        expectedResult=len(sampleBytes)+len(sampleBytearray)+len(sampleMemoryview)
+        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
 if __name__ == '__main__':
