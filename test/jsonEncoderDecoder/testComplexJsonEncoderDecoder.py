@@ -135,7 +135,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleBinary(self):
         # create object
         # TODO: upgrade lists & set
-        sampleBytes = bytes.fromhex('2Ef0 F1f2  ')
+        sampleBytes = b'\xf0\xf1\xf2'
         sampleBytearray = bytearray.fromhex('2Ef0 F1f2  ')
         sampleMemoryview = memoryview(b'abcefg')
         testObject=SampleBinary(sampleBytes,sampleBytearray,sampleMemoryview)
