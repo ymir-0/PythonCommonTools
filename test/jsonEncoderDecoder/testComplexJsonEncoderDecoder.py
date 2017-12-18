@@ -102,16 +102,16 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe string
     def testSampleString(self):
         # create object
-        sampleStringAttribute = "hello world!"
-        testObject=SampleString(sampleStringAttribute)
+        sampleString = "hello world!"
+        testObject=SampleString(sampleString)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
         # decode it
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleString,type(decodedObject),"types do not match")
-        self.assertEqual(sampleStringAttribute,testObject.sampleString,"attribute does not match")
-        expectedResult=len(sampleStringAttribute)
+        self.assertEqual(sampleString,testObject.sampleString,"attribute does not match")
+        expectedResult=len(sampleString)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
