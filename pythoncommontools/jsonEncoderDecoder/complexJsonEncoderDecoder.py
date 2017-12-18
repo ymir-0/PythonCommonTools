@@ -63,9 +63,7 @@ class BytesSurrogate():
         return finalObject
     def __init__(self,originalObject=bytes()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytesSurrogate.__name__)
-        self.integers=list()
-        for integer in originalObject:
-            self.integers.append(integer)
+        self.integers=list(originalObject)
 #TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
