@@ -63,6 +63,13 @@ class SampleSet():
     def __init__(self, sampleSet=set(), sampleFrozenset=frozenset()):
         self.sampleSet=sampleSet
         self.sampleFrozenset=sampleFrozenset
+class SampleDictionnary():
+    # sample function
+    def sampleFunction(self):
+        return len(self.sampleDictionnary)
+    # contructor
+    def __init__(self, sampleDictionnary=dict()):
+        self.sampleDictionnary=sampleDictionnary
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -101,7 +108,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe sequence
     def testSampleSequence(self):
         # create object
-        # TODO: upgrade lists & set
+        # TODO: upgrade lists & set & map
         sampleList = [0,1.2]
         sampleTuple = (3,4.5)
         sampleRange = range(1,10)
@@ -134,7 +141,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe binary
     def testSampleBinary(self):
         # create object
-        # TODO: upgrade lists & set
+        # TODO: upgrade lists & set & map
         sampleBytes = b'\xf0\xf1\xf2'
         sampleBytearray = bytearray.fromhex('2Ef0 F1f2  ')
         sampleMemoryview = memoryview(b'abcefg')
@@ -150,7 +157,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleMemoryview,testObject.sampleMemoryview,"attribute sampleMemoryview does not match")
         expectedResult=len(sampleBytes)+len(sampleBytearray)+len(sampleMemoryview)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
-    # test simpe binary
+    # test simpe set
     def testSampleSet(self):
         # create object
         # TODO: upgrade lists & set
@@ -166,6 +173,21 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleSet,testObject.sampleSet,"attribute sampleBytes does not match")
         self.assertEqual(sampleFrozenset,testObject.sampleFrozenset,"attribute sampleBytearray does not match")
         expectedResult=len(sampleSet)+len(sampleFrozenset)
+        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+    # test simpe dictionnary
+    def testSampleDictionnary(self):
+        # create object
+        # TODO: upgrade lists & set & map
+        sampleDictionnary = {'one': 1, 'two': 2, 'three': 3}
+        testObject=SampleDictionnary(sampleDictionnary)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(SampleDictionnary,type(decodedObject),"types do not match")
+        self.assertEqual(sampleDictionnary,testObject.sampleDictionnary,"attribute does not match")
+        expectedResult=len(sampleDictionnary)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
