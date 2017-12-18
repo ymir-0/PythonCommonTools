@@ -140,9 +140,15 @@ class ComplexJsonDecoder(  ):
         # return instantiated object
         return instantiatedObject
 def loadClass(moduleName,className):
+    # logger context
+    argsStr = methodArgsStringRepresentation(signature(loadClass).parameters, locals())
+    # logger input
+    logger.loadedLogger.input(__name__, functionOrmethod=loadClass.__name__, message=argsStr)
     # load class
     importedModule = import_module(moduleName)
     loadedClass = getattr(importedModule, className)
+    # logger output
+    logger.loadedLogger.output(__name__, functionOrmethod=loadClass.__name__,message=loadedClass)
     # return
     return loadedClass
 #------------------------------------------------
