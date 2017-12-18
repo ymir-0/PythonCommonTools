@@ -112,12 +112,8 @@ class ComplexJsonDecoder(  ):
             logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
         # otherwise, continue decoding
         else:
-            # load module
-            moduleName=dictObject[EncryptionMarkup.MODULE.value]
-            importedModule=import_module(moduleName)
             # load class
-            className=dictObject[EncryptionMarkup.CLASS.value]
-            loadedClass=getattr(importedModule,className)
+            loadedClass=loadClass(dictObject[EncryptionMarkup.MODULE.value], dictObject[EncryptionMarkup.CLASS.value])
             # remove markups
             del dictObject[EncryptionMarkup.MODULE.value]
             del dictObject[EncryptionMarkup.CLASS.value]
@@ -129,18 +125,12 @@ class ComplexJsonDecoder(  ):
             for attributeName, attributeValue in instantiatedObject.__dict__.items():
                 # search the unserializable ones
                 if type(attributeValue)==str and EncryptionMarkup.SURROGATE_TYPE.value in attributeValue:
-                    # TODO : use instrospective class generation to avoid multiples if
-                    # complex type
-                    if ComplexeSurrogate.__name__ in attributeValue:
-                        surrogateClass=ComplexeSurrogate
-                    # range type
-                    if RangeSurrogate.__name__ in attributeValue:
-                        surrogateClass=RangeSurrogate
-                    # bytes type
-                    if BytesSurrogate.__name__ in attributeValue:
-                        surrogateClass=BytesSurrogate
+                    # load surrogate class
+                    currentModule=__name__
+                    dictObject=loads(attributeValue)
+                    loadedClass = loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
                     # replace in instanciated object
-                    instantiatedAttribute=surrogateClass.convertToFinalObject(attributeValue)
+                    instantiatedAttribute=loadedClass.convertToFinalObject(attributeValue)
                     setattr(instantiatedObject, attributeName, instantiatedAttribute)
                     pass
                 pass
@@ -149,6 +139,12 @@ class ComplexJsonDecoder(  ):
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
         # return instantiated object
         return instantiatedObject
+def loadClass(moduleName,className):
+    # load class
+    importedModule = import_module(moduleName)
+    loadedClass = getattr(importedModule, className)
+    # return
+    return loadedClass
 #------------------------------------------------
 class ComplexJsonEncoder_ORIGINAL( JSONEncoder ):
     # methods
