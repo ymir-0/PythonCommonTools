@@ -84,9 +84,9 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleBoolean,type(decodedObject),"object types do not match")
-        self.assertEqual(bool,type(testObject.sampleBoolean),"attribute type does not match")
-        self.assertTrue(testObject.sampleBoolean,"attribute value does not match")
-        self.assertFalse(testObject.sampleFunction(False),"method does not match")
+        self.assertEqual(bool,type(decodedObject.sampleBoolean),"attribute type does not match")
+        self.assertTrue(decodedObject.sampleBoolean,"attribute value does not match")
+        self.assertFalse(decodedObject.sampleFunction(False),"method does not match")
     # test simpe numeric
     def testSampleNumeric(self):
         # create object
@@ -100,12 +100,15 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleNumeric,type(decodedObject),"object types do not match")
-        self.assertEqual(sampleInt,testObject.sampleInt,"attribute value sampleInt does not match")
-        self.assertEqual(sampleFloat,testObject.sampleFloat,"attribute value sampleFloat does not match")
-        self.assertEqual(sampleComplex,testObject.sampleComplex,"attribute value sampleComplex does not match")
+        self.assertEqual(int,type(decodedObject.sampleInt),"attribute type sampleInt does not match")
+        self.assertEqual(sampleInt,decodedObject.sampleInt,"attribute value sampleInt does not match")
+        self.assertEqual(float,type(decodedObject.sampleFloat),"attribute type sampleFloat does not match")
+        self.assertEqual(sampleFloat,decodedObject.sampleFloat,"attribute value sampleFloat does not match")
+        self.assertEqual(complex,type(decodedObject.sampleComplex),"attribute type sampleComplex does not match")
+        self.assertEqual(sampleComplex,decodedObject.sampleComplex,"attribute value sampleComplex does not match")
         externalNumeric=6
         expectedResult=sampleInt+sampleFloat+sampleComplex+externalNumeric
-        self.assertEqual(expectedResult,testObject.sampleFunction(externalNumeric),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(externalNumeric),"method does not match")
     # test simpe sequence
     def testSampleSequence(self):
         # create object
@@ -120,11 +123,14 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleSequence,type(decodedObject),"object types do not match")
-        self.assertEqual(sampleList,testObject.sampleList,"attribute value sampleList does not match")
-        self.assertEqual(sampleTuple,testObject.sampleTuple,"attribute value sampleTuple does not match")
-        self.assertEqual(sampleRange,testObject.sampleRange,"attribute value sampleRange does not match")
+        self.assertEqual(list,type(decodedObject.sampleList),"attribute type sampleList does not match")
+        self.assertEqual(sampleList,decodedObject.sampleList,"attribute value sampleList does not match")
+        self.assertEqual(tuple,type(decodedObject.sampleTuple),"attribute type sampleTuple does not match")
+        self.assertEqual(sampleTuple,decodedObject.sampleTuple,"attribute value sampleTuple does not match")
+        self.assertEqual(range,type(decodedObject.sampleRange),"attribute type sampleRange does not match")
+        self.assertEqual(sampleRange,decodedObject.sampleRange,"attribute value sampleRange does not match")
         expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
-        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
     # test simpe string
     def testSampleString(self):
         # create object
@@ -136,10 +142,10 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleString,type(decodedObject),"object types do not match")
-        self.assertEqual(str,type(testObject.sampleString),"attribute type does not match")
-        self.assertEqual(sampleString,testObject.sampleString,"attribute value does not match")
+        self.assertEqual(str,type(decodedObject.sampleString),"attribute type does not match")
+        self.assertEqual(sampleString,decodedObject.sampleString,"attribute value does not match")
         expectedResult=len(sampleString)
-        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
     # test simpe binary
     def testSampleBinary(self):
         # create object
@@ -154,11 +160,14 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleBinary,type(decodedObject),"object types do not match")
-        self.assertEqual(sampleBytes,testObject.sampleBytes,"attribute value sampleBytes does not match")
-        self.assertEqual(sampleBytearray,testObject.sampleBytearray,"attribute value sampleBytearray does not match")
-        self.assertEqual(sampleMemoryview,testObject.sampleMemoryview,"attribute value sampleMemoryview does not match")
+        self.assertEqual(bytes,type(decodedObject.sampleBytes),"attribute type sampleBytes does not match")
+        self.assertEqual(sampleBytes,decodedObject.sampleBytes,"attribute value sampleBytes does not match")
+        self.assertEqual(bytearray,type(decodedObject.sampleBytearray),"attribute type sampleBytearray does not match")
+        self.assertEqual(sampleBytearray,decodedObject.sampleBytearray,"attribute value sampleBytearray does not match")
+        self.assertEqual(memoryview,type(decodedObject.sampleMemoryview),"attribute type sampleMemoryview does not match")
+        self.assertEqual(sampleMemoryview,decodedObject.sampleMemoryview,"attribute value sampleMemoryview does not match")
         expectedResult=len(sampleBytes)+len(sampleBytearray)+len(sampleMemoryview)
-        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
     # test simpe set
     def testSampleSet(self):
         # create object
@@ -172,10 +181,12 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleSet,type(decodedObject),"object types do not match")
-        self.assertEqual(sampleSet,testObject.sampleSet,"attribute value sampleBytes does not match")
-        self.assertEqual(sampleFrozenset,testObject.sampleFrozenset,"attribute value sampleBytearray does not match")
+        self.assertEqual(set,type(decodedObject.sampleSet),"attribute type sampleSet does not match")
+        self.assertEqual(sampleSet,decodedObject.sampleSet,"attribute value sampleSet does not match")
+        self.assertEqual(frozenset,type(decodedObject.sampleFrozenset),"attribute type sampleFrozenset does not match")
+        self.assertEqual(sampleFrozenset,decodedObject.sampleFrozenset,"attribute value sampleFrozenset does not match")
         expectedResult=len(sampleSet)+len(sampleFrozenset)
-        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
     # test simpe dictionnary
     def testSampleDictionnary(self):
         # create object
@@ -188,10 +199,10 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
         # check result
         self.assertEqual(SampleDictionnary,type(decodedObject),"object types do not match")
-        self.assertEqual(dict,type(testObject.sampleDictionnary),"attribute type does not match")
-        self.assertEqual(sampleDictionnary,testObject.sampleDictionnary,"attribute value does not match")
+        self.assertEqual(dict,type(decodedObject.sampleDictionnary),"attribute type does not match")
+        self.assertEqual(sampleDictionnary,decodedObject.sampleDictionnary,"attribute value does not match")
         expectedResult=len(sampleDictionnary)
-        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+        self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
     pass
 # run test
 if __name__ == '__main__':
