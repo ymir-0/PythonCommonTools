@@ -46,6 +46,13 @@ class SampleString():
     # contructor
     def __init__(self, sampleString=""):
         self.sampleString=sampleString
+class SampleBinary():
+    # sample function
+    #def sampleFunction(self):
+    #    return len(self.sampleList) + len(self.sampleTuple) + len(self.sampleRange)
+    # contructor
+    def __init__(self, sampleBytes=bytes()):
+        self.sampleBytes=sampleBytes
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -114,6 +121,25 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleString,testObject.sampleString,"attribute does not match")
         expectedResult=len(sampleString)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+    # test simpe binary
+    def testSampleBinary(self):
+        # create object
+        # TODO: upgrade lists & set
+        sampleBytes = bytes.fromhex('2Ef0 F1f2  ')
+        #sample = (3,4.5)
+        #sample = range(1,10)
+        testObject=SampleBinary(sampleBytes)#,sample,sample
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(SampleBinary,type(decodedObject),"types do not match")
+        self.assertEqual(sampleBytes,testObject.sampleBytes,"attribute sampleBytes does not match")
+        #self.assertEqual(sample,testObject.sample,"attribute sample does not match")
+        #self.assertEqual(sample,testObject.sample,"attribute sample does not match")
+        #expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
+        #self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
 if __name__ == '__main__':
