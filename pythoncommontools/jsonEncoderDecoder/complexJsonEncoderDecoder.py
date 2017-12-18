@@ -91,7 +91,45 @@ class MemoryviewSurrogate():
     def __init__(self,originalObject=memoryview(b'')):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, MemoryviewSurrogate.__name__)
         self.integers=list(originalObject)
-UNSERIALIZABLE_TYPES={complex:ComplexeSurrogate,range:RangeSurrogate,bytes:BytesSurrogate,bytearray:BytearraySurrogate,memoryview:MemoryviewSurrogate}
+class SetSurrogate():
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        surrogateObject=SetSurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        # WARNING : memory view requires bytes as input
+        finalObject=set(surrogateObject.list)
+        return finalObject
+    def __init__(self,originalObject=set()):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, SetSurrogate.__name__)
+        self.list=list(originalObject)
+class FrozensetSurrogate():
+    @staticmethod
+    def convertToFinalObject(jsonEncryption):
+        # load it in a dictionnary
+        dictObject = loads(jsonEncryption)
+        # update the attributes
+        surrogateObject=FrozensetSurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        # WARNING : memory view requires bytes as input
+        finalObject=frozenset(surrogateObject.list)
+        return finalObject
+    def __init__(self,originalObject=set()):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, FrozensetSurrogate.__name__)
+        self.list=list(originalObject)
+UNSERIALIZABLE_TYPES={
+    complex:ComplexeSurrogate,
+    range:RangeSurrogate,
+    bytes:BytesSurrogate,
+    bytearray:BytearraySurrogate,
+    memoryview:MemoryviewSurrogate,
+    set:SetSurrogate,
+    frozenset:FrozensetSurrogate
+}
 #TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):

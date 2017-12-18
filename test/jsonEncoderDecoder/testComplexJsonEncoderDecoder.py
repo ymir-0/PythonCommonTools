@@ -55,6 +55,14 @@ class SampleBinary():
         self.sampleBytes=sampleBytes
         self.sampleBytearray=sampleBytearray
         self.sampleMemoryview=sampleMemoryview
+class SampleSet():
+    # sample function
+    def sampleFunction(self):
+        return len(self.sampleSet) + len(self.sampleFrozenset)
+    # contructor
+    def __init__(self, sampleSet=set(), sampleFrozenset=frozenset()):
+        self.sampleSet=sampleSet
+        self.sampleFrozenset=sampleFrozenset
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -141,6 +149,23 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleBytearray,testObject.sampleBytearray,"attribute sampleBytearray does not match")
         self.assertEqual(sampleMemoryview,testObject.sampleMemoryview,"attribute sampleMemoryview does not match")
         expectedResult=len(sampleBytes)+len(sampleBytearray)+len(sampleMemoryview)
+        self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
+    # test simpe binary
+    def testSampleSet(self):
+        # create object
+        # TODO: upgrade lists & set
+        sampleSet = set((0,1.2))
+        sampleFrozenset = frozenset((3,4.5))
+        testObject=SampleSet(sampleSet,sampleFrozenset)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(SampleSet,type(decodedObject),"types do not match")
+        self.assertEqual(sampleSet,testObject.sampleSet,"attribute sampleBytes does not match")
+        self.assertEqual(sampleFrozenset,testObject.sampleFrozenset,"attribute sampleBytearray does not match")
+        expectedResult=len(sampleSet)+len(sampleFrozenset)
         self.assertEqual(expectedResult,testObject.sampleFunction(),"method does not match")
     pass
 # run test
