@@ -10,8 +10,6 @@ from json import JSONDecoder , JSONEncoder , dumps , loads
 from sys import maxsize
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
-# constants
-UNSERIALIZABLE_TYPES=(complex,range,bytes)
 # encryption markup
 @unique
 class EncryptionMarkup( Enum ):
@@ -64,6 +62,7 @@ class BytesSurrogate():
     def __init__(self,originalObject=bytes()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytesSurrogate.__name__)
         self.integers=list(originalObject)
+UNSERIALIZABLE_TYPES={complex:ComplexeSurrogate,range:RangeSurrogate,bytes:BytesSurrogate}
 #TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
@@ -79,20 +78,13 @@ class ComplexJsonEncoder(  ):
         # in all attributes
         for attributeName, attributeValue in ugradedObject.__dict__.items():
             # search for all unserializable ones
-            #TODO : use a map 'UNSERIALIZABLE_TYPES' instead to avoid multiples if
-            if type(attributeValue) in UNSERIALIZABLE_TYPES:
-               # complex type
-               if type(attributeValue)==complex:
-                    surrogateValue=ComplexeSurrogate(attributeValue)
-               # range type
-               if type(attributeValue)==range:
-                    surrogateValue=RangeSurrogate(attributeValue)
-               # bytes type
-               if type(attributeValue)==bytes:
-                    surrogateValue=BytesSurrogate(attributeValue)
-               # execute surrogate encryption
-               jsonObject = dumps(surrogateValue.__dict__)
-               setattr(ugradedObject, attributeName, jsonObject)
+            attributeType=type(attributeValue)
+            if attributeType in UNSERIALIZABLE_TYPES.keys():
+                # execute surrogate encryption
+                surrogateClass=UNSERIALIZABLE_TYPES[attributeType]
+                surrogateValue=surrogateClass(attributeValue)
+                jsonObject = dumps(surrogateValue.__dict__)
+                setattr(ugradedObject, attributeName, jsonObject)
             pass
         # add module & class references
         setattr(ugradedObject, EncryptionMarkup.CLASS.value, rawObject.__class__.__name__)
