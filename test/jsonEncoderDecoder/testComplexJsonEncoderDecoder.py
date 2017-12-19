@@ -175,10 +175,10 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe set
     def testSampleSet(self):
         # create object
-        # WARNING : some object are not hashable, so can not be in a set : bytearray
+        # INFO : some object are not hashable, so can not be in a (frozen)set : bytearray, list, set
         # TODO: upgrade lists & set
-        sampleSet = set((b'\xf0\xf1\xf2',memoryview(b'abcefg')))#True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg')
-        sampleFrozenset = frozenset((3,4.5))
+        sampleSet = set((True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg')))
+        sampleFrozenset = frozenset((True,9,8.7,complex(6,5),b'\xe3\xe4\xe5',memoryview(b'azerty')))
         testObject=SampleSet(sampleSet,sampleFrozenset)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
