@@ -117,7 +117,6 @@ UNSERIALIZABLE_TYPES={
     set:SetSurrogate,
     frozenset:FrozensetSurrogate
 }
-#TODO: remove class & static methos for encode / decode
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -234,7 +233,7 @@ class ComplexJsonDecoder(  ):
             # decode real object
             else:
                 # instanciate object
-                instantiationClass=loadClass(dictObject[EncryptionMarkup.MODULE.value], dictObject[EncryptionMarkup.CLASS.value])
+                instantiationClass=ComplexJsonDecoder.loadClass(dictObject[EncryptionMarkup.MODULE.value], dictObject[EncryptionMarkup.CLASS.value])
                 instantiatedObject=instantiationClass()
                 # remove markups
                 del dictObject[EncryptionMarkup.MODULE.value]
@@ -267,7 +266,7 @@ class ComplexJsonDecoder(  ):
         # logger input
         logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = argsStr )
         # load class
-        instantiationClass = loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
+        instantiationClass = ComplexJsonDecoder.loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
         # decode with surrogate
         instantiatedObject=instantiationClass.convertToFinalObject(dictObject)
         # (frozen)set is iterable
@@ -297,17 +296,16 @@ class ComplexJsonDecoder(  ):
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = instantiatedObject )
         # return
         return instantiatedObject
-    pass
-    pass
-def loadClass(moduleName,className):
-    # logger context
-    argsStr = methodArgsStringRepresentation(signature(loadClass).parameters, locals())
-    # logger input
-    logger.loadedLogger.input(__name__, functionOrmethod=loadClass.__name__, message=argsStr)
-    # load class
-    importedModule = import_module(moduleName)
-    loadedClass = getattr(importedModule, className)
-    # logger output
-    logger.loadedLogger.output(__name__, functionOrmethod=loadClass.__name__,message=loadedClass)
-    # return
-    return loadedClass
+    @staticmethod
+    def loadClass(moduleName,className):
+        # logger context
+        argsStr = methodArgsStringRepresentation(signature(ComplexJsonDecoder.loadClass).parameters, locals())
+        # logger input
+        logger.loadedLogger.input(__name__, functionOrmethod=ComplexJsonDecoder.loadClass.__name__, message=argsStr)
+        # load class
+        importedModule = import_module(moduleName)
+        loadedClass = getattr(importedModule, className)
+        # logger output
+        logger.loadedLogger.output(__name__, functionOrmethod=ComplexJsonDecoder.loadClass.__name__,message=loadedClass)
+        # return
+        return loadedClass
