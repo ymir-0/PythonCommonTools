@@ -118,22 +118,6 @@ UNSERIALIZABLE_TYPES={
     set:SetSurrogate,
     frozenset:FrozensetSurrogate
 }
-#INFO : in JSON, all key are string
-class DictionnaryKeySurrogate():
-    @staticmethod
-    def convertToFinalObject(dictObject):
-        # update the attributes
-        surrogateObject=DictionnaryKeySurrogate()
-        surrogateObject.__dict__.update(dictObject)
-        # convert to final type
-        finalObject=frozenset(surrogateObject.list)
-        return finalObject
-    def __init__(self,originalObject=set()):
-        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, DictionnaryKeySurrogate.__name__)
-        self.value=originalObject
-        originalObjectType=type(originalObject)
-        self.moduleName=originalObjectType.__module__
-        self.className=originalObjectType.__name__
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -238,7 +222,6 @@ class ComplexJsonEncoder(  ):
             # INFO: in JSON, keys are always string when it can be everything in python
             jsonKey=str(uuid4())
             encodedAttributKey = ComplexJsonEncoder.dumpComplexObject(rawAttributKey)
-            #surrogateAttributKey = DictionnaryKeySurrogate(encodedAttributKey)
             encodedAttributValue = ComplexJsonEncoder.dumpComplexObject(rawAttributValue)
             jsonObject[jsonKey]=[encodedAttributKey,encodedAttributValue]
         # logger output
