@@ -123,6 +123,19 @@ UNSERIALIZABLE_TYPES={
     set:SetSurrogate,
     frozenset:FrozensetSurrogate
 }
+#INFO: tuple is serializable by default, but it becomes a list
+class TupleSurrogate(AbstractSurrogate):
+    @staticmethod
+    def convertToFinalObject(dictObject):
+        # update the attributes
+        surrogateObject=TupleSurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        finalObject=frozenset(surrogateObject.list)
+        return finalObject
+    def __init__(self,originalObject=tuple()):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, TupleSurrogate.__name__)
+        self.list=list(originalObject)
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -209,6 +222,10 @@ class ComplexJsonEncoder(  ):
         for rawAttributElement in rawObject:
             encodedAttributElement = ComplexJsonEncoder.dumpComplexObject(rawAttributElement)
             jsonObject.append(encodedAttributElement)
+        # encode tuple with surrogate
+        if type(rawObject)==tuple:
+            surrogateTuple=TupleSurrogate(jsonObject)
+            jsonObject = dumps(surrogateTuple.__dict__)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = jsonObject )
         # return
@@ -273,7 +290,7 @@ class ComplexJsonDecoder(  ):
         elif jsonObjectType in (bool,int,float) or (jsonObjectType==str and True not in stringComplexeFilterage):
             instantiatedObject = ComplexJsonDecoder.loadJsonPrimitiveObject(jsonObject)
         # decode iterable object
-        elif jsonObjectType in (list,tuple):
+        elif jsonObjectType == list:
             instantiatedObject = ComplexJsonDecoder.loadIterableObject(jsonObject)
         # decode dictionnary object
         elif jsonObjectType==dict:
@@ -325,13 +342,15 @@ class ComplexJsonDecoder(  ):
         instantiationClass = ComplexJsonDecoder.loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
         # decode with surrogate
         instantiatedObject=instantiationClass.convertToFinalObject(dictObject)
-        # (frozen)set is iterable
-        if instantiationClass in (SetSurrogate,FrozensetSurrogate):
+        # (frozen)set and tuple are iterable
+        if instantiationClass in (SetSurrogate,FrozensetSurrogate,TupleSurrogate):
             instantiatedObject=ComplexJsonDecoder.loadIterableObject(instantiatedObject)
             if instantiationClass==SetSurrogate:
                 instantiatedObject=set(instantiatedObject)
-            else:
+            elif instantiationClass==FrozensetSurrogate:
                 instantiatedObject = frozenset(instantiatedObject)
+            else :
+                instantiatedObject = tuple(instantiatedObject)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadUnserializablePrimitiveObject.__name__ , message = instantiatedObject )
         # return
