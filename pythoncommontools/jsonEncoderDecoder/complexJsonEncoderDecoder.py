@@ -185,6 +185,10 @@ class ComplexJsonEncoder(  ):
         rawObjectType = type(rawObject)
         surrogateClass = UNSERIALIZABLE_TYPES[rawObjectType]
         surrogateValue = surrogateClass(rawObject)
+        # (frozen)set is iterable
+        if surrogateClass in (SetSurrogate,FrozensetSurrogate):
+            surrogateValue.list=ComplexJsonEncoder.dumpIterableObject(surrogateValue.list)
+        # encode object
         jsonObject = dumps(surrogateValue.__dict__)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = jsonObject )
@@ -270,6 +274,13 @@ class ComplexJsonDecoder(  ):
         instantiationClass = loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
         # decode with surrogate
         instantiatedObject=instantiationClass.convertToFinalObject(dictObject)
+        # (frozen)set is iterable
+        if instantiationClass in (SetSurrogate,FrozensetSurrogate):
+            instantiatedObject=ComplexJsonDecoder.loadIterableObject(instantiatedObject)
+            if instantiationClass==SetSurrogate:
+                instantiatedObject=set(instantiatedObject)
+            else:
+                instantiatedObject = frozenset(instantiatedObject)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = instantiatedObject )
         # return

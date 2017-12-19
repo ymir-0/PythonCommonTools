@@ -175,8 +175,9 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe set
     def testSampleSet(self):
         # create object
+        # WARNING : some object are not hashable, so can not be in a set : bytearray
         # TODO: upgrade lists & set
-        sampleSet = set((0,1.2))
+        sampleSet = set((b'\xf0\xf1\xf2',memoryview(b'abcefg')))#True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg')
         sampleFrozenset = frozenset((3,4.5))
         testObject=SampleSet(sampleSet,sampleFrozenset)
         # encode it
