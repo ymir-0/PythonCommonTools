@@ -113,9 +113,14 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleSequence(self):
         # create object
         # TODO: upgrade lists & set & map
-        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty')]
+        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij')))
+        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd')))
+        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),
+                     innerSampleSet,innerSampleFrozenset]
+        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr')))
+        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf')))
         sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),
-                      innerList]
+                      innerList,sampleSet,sampleFrozenset]
         #TODO: test inner tuple
         sampleTuple = (3,4.5)
         sampleRange = range(1,10)
