@@ -219,10 +219,11 @@ class ComplexJsonDecoder(  ):
         argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadComplexObject ).parameters, locals() )
         # logger input
         logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
-        # decode JSON primitive object
+        # type of JSON object
         jsonObjectType=type(jsonObject)
-        # f
+        # filter the kind of string : primitive or complexe
         stringComplexeFilterage=frozenset([encryptionMarkup in str(jsonObject) for encryptionMarkup in EncryptionMarkup.listValues()])
+        # decode JSON primitive object
         if jsonObjectType in (bool,int,float) or (jsonObjectType==str and True not in stringComplexeFilterage):
             instantiatedObject = ComplexJsonDecoder.loadJsonPrimitiveObject(jsonObject)
         # decode iterable object
