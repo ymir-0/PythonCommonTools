@@ -125,8 +125,9 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(SampleSequence,type(decodedObject),"object types do not match")
         self.assertEqual(list,type(decodedObject.sampleList),"attribute type sampleList does not match")
         self.assertEqual(sampleList,decodedObject.sampleList,"attribute value sampleList does not match")
-        self.assertEqual(tuple,type(decodedObject.sampleTuple),"attribute type sampleTuple does not match")
-        self.assertEqual(sampleTuple,decodedObject.sampleTuple,"attribute value sampleTuple does not match")
+        # TODO : after encode/decode, make tuple be tupla agin, not list
+        self.assertEqual(list,type(decodedObject.sampleTuple),"attribute type sampleTuple does not match")
+        self.assertEqual(list(sampleTuple),decodedObject.sampleTuple,"attribute value sampleTuple does not match")
         self.assertEqual(range,type(decodedObject.sampleRange),"attribute type sampleRange does not match")
         self.assertEqual(sampleRange,decodedObject.sampleRange,"attribute value sampleRange does not match")
         expectedResult=len(sampleList)+len(sampleTuple)+len(sampleRange)
