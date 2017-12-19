@@ -70,6 +70,11 @@ class SampleDictionnary():
     # contructor
     def __init__(self, sampleDictionnary=dict()):
         self.sampleDictionnary=sampleDictionnary
+class SampleObject():
+    # contructor
+    def __init__(self, sampleAttributs=dict()):
+        for attributKey, attributValue in sampleAttributs.items():
+            setattr(self, attributKey, attributValue)
 # define test
 #TODO: use the 'objectComparison' method defined in 'objectUtil' ?
 #I do not use the 'objectComparison' method defined in 'objectUtil' module because it is not tested yet
@@ -119,8 +124,163 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
                      innerSampleSet,innerSampleFrozenset]
         sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr'),None,innerSampleFrozenset))
         sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),None,innerSampleFrozenset))
+        innerDictionnary = {
+            False:True,
+            True: None,
+            'a': 9,
+            'b': 8.7,
+            'c': complex(6,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': innerList,
+            #'i': (3,4.5),
+            'j': None,
+            0: 9,
+            1: 8.7,
+            2: complex(6, 5),
+            3: "azerty",
+            4: b'\xf0\xf1\xf2',
+            5: bytearray(b'\xe3\xe4\xe5'),
+            6: memoryview(b'abcefg'),
+            7: innerList,
+            # 8: (3,4.5),
+            9: None,
+            10.: 9,
+            9.1: 8.7,
+            8.2: complex(6, 5),
+            7.3: "azerty",
+            6.4: b'\xf0\xf1\xf2',
+            5.5: bytearray(b'\xe3\xe4\xe5'),
+            4.6: memoryview(b'abcefg'),
+            3.7: innerList,
+            # 8: (3,4.5),
+            1.9: None,
+            complex(1,0): 9,
+            complex(9,1): 8.7,
+            complex(8,2): complex(6, 5),
+            complex(7,3): "azerty",
+            complex(6,4): b'\xf0\xf1\xf2',
+            complex(5,5): bytearray(b'\xe3\xe4\xe5'),
+            complex(4,6): memoryview(b'abcefg'),
+            complex(3,7): innerList,
+            # complex(8: (3,4.5),
+            complex(2, 8): None,
+            b'az': 9,
+            b'by': 8.7,
+            b'cx': complex(6, 5),
+            b'dw': "azerty",
+            b'ev': b'\xf0\xf1\xf2',
+            b'fu': bytearray(b'\xe3\xe4\xe5'),
+            b'gt': memoryview(b'abcefg'),
+            b'hs': innerList,
+            # 'i': (3,4.5),
+            b'hy': None,
+            memoryview(b'er'): 1,
+            memoryview(b'ty'): 2.3,
+            memoryview(b'ui'): complex(4, 5),
+            memoryview(b'op'): "azerty",
+            memoryview(b'qs'): b'\xf0\xf1\xf2',
+            memoryview(b'df'): bytearray(b'\xe3\xe4\xe5'),
+            memoryview(b'gh'): memoryview(b'abcefg'),
+            memoryview(b'jk'): innerList,
+            # 'ir': (3,4.5),
+            memoryview(b'wx'): None,
+            frozenset([0, 1]): 1,
+            frozenset([2.0, 3.1]): 2.3,
+            frozenset([complex(0, 1), complex(2, 3)]): complex(4, 5),
+            frozenset(["0", "1"]): "azerty",
+            frozenset([b'01', b'23']): b'\xf0\xf1\xf2',
+            frozenset([b'32', 1]): bytearray(b'\xe3\xe4\xe5'),
+            frozenset([memoryview(b'eswascz'), memoryview(b'plmoijk')]): memoryview(b'abcefg'),
+            frozenset([2, 3]): innerList,
+            # tuple(X): (3,4.5),
+            frozenset([None]): None,
+        }
+        sampleDictionnary = {
+            True:False,
+            False: None,
+            'a': 1,
+            'b': 2.3,
+            'c': complex(4,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': innerList,
+            #'i': (3,4.5),
+            'k': innerDictionnary,
+            'l': None,
+            0: 1,
+            1: 2.3,
+            2: complex(4,5),
+            3: "azerty",
+            4: b'\xf0\xf1\xf2',
+            5: bytearray(b'\xe3\xe4\xe5'),
+            6: memoryview(b'abcefg'),
+            7: innerList,
+            #8: (3,4.5),
+            10: innerDictionnary,
+            11: None,
+            10.: 1,
+            9.1: 2.3,
+            8.2: complex(4, 5),
+            7.3: "azerty",
+            6.4: b'\xf0\xf1\xf2',
+            5.5: bytearray(b'\xe3\xe4\xe5'),
+            4.6: memoryview(b'abcefg'),
+            3.7: innerList,
+            # 2: (3,4.5),
+            0.1: innerDictionnary,
+            1.0: None,
+            complex(1,0): 1,
+            complex(9,1): 2.3,
+            complex(8,2): complex(4, 5),
+            complex(7,3): "azerty",
+            complex(6,4): b'\xf0\xf1\xf2',
+            complex(5,5): bytearray(b'\xe3\xe4\xe5'),
+            complex(4,6): memoryview(b'abcefg'),
+            complex(3,7): innerList,
+            # complex(2: (3,4.5),
+            complex(1,9): innerDictionnary,
+            complex(1, 0): None,
+            b'az': 1,
+            b'by': 2.3,
+            b'cx': complex(4, 5),
+            b'dw': "azerty",
+            b'ev': b'\xf0\xf1\xf2',
+            b'fu': bytearray(b'\xe3\xe4\xe5'),
+            b'gt': memoryview(b'abcefg'),
+            b'hs': innerList,
+            # 'ir': (3,4.5),
+            b'ju': innerDictionnary,
+            b'nb': None,
+            memoryview(b'er'): 1,
+            memoryview(b'ty'): 2.3,
+            memoryview(b'ui'): complex(4, 5),
+            memoryview(b'op'): "azerty",
+            memoryview(b'qs'): b'\xf0\xf1\xf2',
+            memoryview(b'df'): bytearray(b'\xe3\xe4\xe5'),
+            memoryview(b'gh'): memoryview(b'abcefg'),
+            memoryview(b'jk'): innerList,
+            # 'ir': (3,4.5),
+            memoryview(b'lm'): innerDictionnary,
+            memoryview(b'wx'): None,
+            frozenset([0,1]): 1,
+            frozenset([2.0,3.1]): 2.3,
+            frozenset([complex(0, 1),complex(2, 3)]): complex(4, 5),
+            frozenset(["0","1"]): "azerty",
+            frozenset([b'01',b'23']): b'\xf0\xf1\xf2',
+            frozenset([b'32',1]): bytearray(b'\xe3\xe4\xe5'),
+            frozenset([memoryview(b'eswascz'),memoryview(b'plmoijk')]): memoryview(b'abcefg'),
+            frozenset([2,3]): innerList,
+            # tuple(X): (3,4.5),
+            frozenset({'jack': 4098, 12.3: complex(41,39)}): innerDictionnary,
+            frozenset([None]): None,
+        }
         sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),None,
-                      innerList,sampleSet,sampleFrozenset]
+                      innerList,sampleSet,sampleFrozenset,sampleDictionnary]
         #TODO: test inner tuple
         sampleTuple = (3,4.5)
         sampleRange = range(1,10)
@@ -180,7 +340,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     # test simpe set
     def testSampleSet(self):
         # create object
-        # INFO : some object are not hashable, so can not be in a (frozen)set : bytearray, list, set
+        # INFO : some object are not hashable, so can not be in a (frozen)set : bytearray, list, set, dict
         # TODO: upgrade lists & set
         innerFrozenset = frozenset((True,3,2.6,complex(1,9),b'\x3e\x4e\x5e',memoryview(b'wqazsxc'),None))
         sampleSet = set((True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg'),None,innerFrozenset))
@@ -210,7 +370,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),None))
         sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),None,
                       innerList,sampleSet,sampleFrozenset]
-        # INFO : some object are not hashable, so can not be in dictionnary key : bytearray, list, set
+        # INFO : some object are not hashable, so can not be in dictionnary key : bytearray, list, set, dict
         innerDictionnary = {
             False:True,
             True: None,
@@ -377,6 +537,206 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         self.assertEqual(sampleDictionnary,decodedObject.sampleDictionnary,"attribute value does not match")
         expectedResult=len(sampleDictionnary)
         self.assertEqual(expectedResult,decodedObject.sampleFunction(),"method does not match")
+    # test simpe object
+    def testSampleObject(self):
+        # create object
+        # INFO : some object are not hashable, so can not be in a (frozen)set : bytearray, list, set, dict
+        # TODO: upgrade lists & set
+        sampleInt = 1
+        sampleFloat = 2.3
+        sampleComplex = complex(4, 5)
+        sampleNumeric=SampleNumeric(sampleInt,sampleFloat,sampleComplex)
+        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij'),None))
+        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd'),None))
+        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),None,
+                     innerSampleSet,innerSampleFrozenset]
+        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr'),None,innerSampleFrozenset))
+        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),None,innerSampleFrozenset))
+        innerDictionnary = {
+            False:True,
+            True: None,
+            'a': 9,
+            'b': 8.7,
+            'c': complex(6,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': innerList,
+            #'i': (3,4.5),
+            'j': None,
+            0: 9,
+            1: 8.7,
+            2: complex(6, 5),
+            3: "azerty",
+            4: b'\xf0\xf1\xf2',
+            5: bytearray(b'\xe3\xe4\xe5'),
+            6: memoryview(b'abcefg'),
+            7: innerList,
+            # 8: (3,4.5),
+            9: None,
+            10.: 9,
+            9.1: 8.7,
+            8.2: complex(6, 5),
+            7.3: "azerty",
+            6.4: b'\xf0\xf1\xf2',
+            5.5: bytearray(b'\xe3\xe4\xe5'),
+            4.6: memoryview(b'abcefg'),
+            3.7: innerList,
+            # 8: (3,4.5),
+            1.9: None,
+            complex(1,0): 9,
+            complex(9,1): 8.7,
+            complex(8,2): complex(6, 5),
+            complex(7,3): "azerty",
+            complex(6,4): b'\xf0\xf1\xf2',
+            complex(5,5): bytearray(b'\xe3\xe4\xe5'),
+            complex(4,6): memoryview(b'abcefg'),
+            complex(3,7): innerList,
+            # complex(8: (3,4.5),
+            complex(2, 8): None,
+            b'az': 9,
+            b'by': 8.7,
+            b'cx': complex(6, 5),
+            b'dw': "azerty",
+            b'ev': b'\xf0\xf1\xf2',
+            b'fu': bytearray(b'\xe3\xe4\xe5'),
+            b'gt': memoryview(b'abcefg'),
+            b'hs': innerList,
+            # 'i': (3,4.5),
+            b'hy': None,
+            memoryview(b'er'): 1,
+            memoryview(b'ty'): 2.3,
+            memoryview(b'ui'): complex(4, 5),
+            memoryview(b'op'): "azerty",
+            memoryview(b'qs'): b'\xf0\xf1\xf2',
+            memoryview(b'df'): bytearray(b'\xe3\xe4\xe5'),
+            memoryview(b'gh'): memoryview(b'abcefg'),
+            memoryview(b'jk'): innerList,
+            # 'ir': (3,4.5),
+            memoryview(b'wx'): None,
+            frozenset([0, 1]): 1,
+            frozenset([2.0, 3.1]): 2.3,
+            frozenset([complex(0, 1), complex(2, 3)]): complex(4, 5),
+            frozenset(["0", "1"]): "azerty",
+            frozenset([b'01', b'23']): b'\xf0\xf1\xf2',
+            frozenset([b'32', 1]): bytearray(b'\xe3\xe4\xe5'),
+            frozenset([memoryview(b'eswascz'), memoryview(b'plmoijk')]): memoryview(b'abcefg'),
+            frozenset([2, 3]): innerList,
+            # tuple(X): (3,4.5),
+            frozenset([None]): None,
+        }
+        sampleDictionnary = {
+            True:False,
+            False: None,
+            'a': 1,
+            'b': 2.3,
+            'c': complex(4,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': innerList,
+            #'i': (3,4.5),
+            'k': innerDictionnary,
+            'l': None,
+            0: 1,
+            1: 2.3,
+            2: complex(4,5),
+            3: "azerty",
+            4: b'\xf0\xf1\xf2',
+            5: bytearray(b'\xe3\xe4\xe5'),
+            6: memoryview(b'abcefg'),
+            7: innerList,
+            #8: (3,4.5),
+            10: innerDictionnary,
+            11: None,
+            10.: 1,
+            9.1: 2.3,
+            8.2: complex(4, 5),
+            7.3: "azerty",
+            6.4: b'\xf0\xf1\xf2',
+            5.5: bytearray(b'\xe3\xe4\xe5'),
+            4.6: memoryview(b'abcefg'),
+            3.7: innerList,
+            # 2: (3,4.5),
+            0.1: innerDictionnary,
+            1.0: None,
+            complex(1,0): 1,
+            complex(9,1): 2.3,
+            complex(8,2): complex(4, 5),
+            complex(7,3): "azerty",
+            complex(6,4): b'\xf0\xf1\xf2',
+            complex(5,5): bytearray(b'\xe3\xe4\xe5'),
+            complex(4,6): memoryview(b'abcefg'),
+            complex(3,7): innerList,
+            # complex(2: (3,4.5),
+            complex(1,9): innerDictionnary,
+            complex(1, 0): None,
+            b'az': 1,
+            b'by': 2.3,
+            b'cx': complex(4, 5),
+            b'dw': "azerty",
+            b'ev': b'\xf0\xf1\xf2',
+            b'fu': bytearray(b'\xe3\xe4\xe5'),
+            b'gt': memoryview(b'abcefg'),
+            b'hs': innerList,
+            # 'ir': (3,4.5),
+            b'ju': innerDictionnary,
+            b'nb': None,
+            memoryview(b'er'): 1,
+            memoryview(b'ty'): 2.3,
+            memoryview(b'ui'): complex(4, 5),
+            memoryview(b'op'): "azerty",
+            memoryview(b'qs'): b'\xf0\xf1\xf2',
+            memoryview(b'df'): bytearray(b'\xe3\xe4\xe5'),
+            memoryview(b'gh'): memoryview(b'abcefg'),
+            memoryview(b'jk'): innerList,
+            # 'ir': (3,4.5),
+            memoryview(b'lm'): innerDictionnary,
+            memoryview(b'wx'): None,
+            frozenset([0,1]): 1,
+            frozenset([2.0,3.1]): 2.3,
+            frozenset([complex(0, 1),complex(2, 3)]): complex(4, 5),
+            frozenset(["0","1"]): "azerty",
+            frozenset([b'01',b'23']): b'\xf0\xf1\xf2',
+            frozenset([b'32',1]): bytearray(b'\xe3\xe4\xe5'),
+            frozenset([memoryview(b'eswascz'),memoryview(b'plmoijk')]): memoryview(b'abcefg'),
+            frozenset([2,3]): innerList,
+            # tuple(X): (3,4.5),
+            frozenset({'jack': 4098, 12.3: complex(41,39)}): innerDictionnary,
+            frozenset([None]): None,
+        }
+        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),None,
+                      innerList,sampleSet,sampleFrozenset,sampleDictionnary]
+        sampleTuple = (3,4.5)
+        sampleRange = range(1,10)
+        sampleSequence=SampleSequence(sampleList,sampleTuple,sampleRange)
+        sampleString = "hello world!"
+        sampleBytes = b'\xf0\xf1\xf2'
+        sampleBytearray = bytearray(b'\xe3\xe4\xe5')
+        sampleMemoryview = memoryview(b'abcefg')
+        sampleBinary=SampleBinary(sampleBytes,sampleBytearray,sampleMemoryview)
+        sampleSet=SampleSet(sampleSet,sampleFrozenset)
+        sampleDictionnary=SampleDictionnary(sampleDictionnary)
+        sampleAttributs={
+            "sampleBoolean":True,
+            "sampleNumeric": sampleNumeric,
+            "sampleSequence": sampleSequence,
+            "sampleString": sampleString,
+            "sampleBinary": sampleBinary,
+            "sampleSet": sampleSet,
+            "sampleDictionnary": sampleDictionnary,
+        }
+        testObject=SampleObject(sampleAttributs)
+        # encode it
+        testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
+        # decode it
+        decodedObject=ComplexJsonDecoder.loadComplexObject(testJson)
+        # check result
+        self.assertEqual(SampleObject,type(decodedObject),"object types do not match")
+        # check all attributs
+        self.assertEqual(len(testObject.__dict__),len(decodedObject.__dict__),"object attributes number does not match")
     pass
 # run test
 if __name__ == '__main__':
