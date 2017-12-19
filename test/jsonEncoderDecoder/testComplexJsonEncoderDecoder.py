@@ -201,7 +201,47 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleDictionnary(self):
         # create object
         # TODO: upgrade lists & set & map
-        sampleDictionnary = {'one': 1, 'two': 2, 'three': 3}
+        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij')))
+        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd')))
+        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),
+                     innerSampleSet,innerSampleFrozenset]
+        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr')))
+        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf')))
+        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),
+                      innerList,sampleSet,sampleFrozenset]
+        innerDictionnary = {
+            'a': 9,
+            'b': 8.7,
+            'c': complex(6,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': innerList,
+            #'i': (3,4.5),
+        }
+        sampleDictionnary = {
+            'a': 1,
+            'b': 2.3,
+            'c': complex(4,5),
+            'd': "azerty",
+            'e': b'\xf0\xf1\xf2',
+            'f': bytearray(b'\xe3\xe4\xe5'),
+            'g': memoryview(b'abcefg'),
+            'h': sampleList,
+            #'i': (3,4.5),
+            'k': innerDictionnary,
+            0: 1,
+            1: 2.3,
+            2: complex(4,5),
+            3: "azerty",
+            4: b'\xf0\xf1\xf2',
+            5: bytearray(b'\xe3\xe4\xe5'),
+            6: memoryview(b'abcefg'),
+            7: sampleList,
+            #8: (3,4.5),
+            10: innerDictionnary,
+        }
         testObject=SampleDictionnary(sampleDictionnary)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)

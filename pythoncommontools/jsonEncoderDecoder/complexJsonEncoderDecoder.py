@@ -6,6 +6,7 @@ from enum import Enum , unique
 from importlib import import_module
 from inspect import signature
 from json import dumps , loads
+from uuid import uuid4
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
 # encryption markup
@@ -117,6 +118,22 @@ UNSERIALIZABLE_TYPES={
     set:SetSurrogate,
     frozenset:FrozensetSurrogate
 }
+#INFO : in JSON, all key are string
+class DictionnaryKeySurrogate():
+    @staticmethod
+    def convertToFinalObject(dictObject):
+        # update the attributes
+        surrogateObject=DictionnaryKeySurrogate()
+        surrogateObject.__dict__.update(dictObject)
+        # convert to final type
+        finalObject=frozenset(surrogateObject.list)
+        return finalObject
+    def __init__(self,originalObject=set()):
+        setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, DictionnaryKeySurrogate.__name__)
+        self.value=originalObject
+        originalObjectType=type(originalObject)
+        self.moduleName=originalObjectType.__module__
+        self.className=originalObjectType.__name__
 # encode from objects to JSON
 class ComplexJsonEncoder(  ):
     # methods
@@ -218,9 +235,12 @@ class ComplexJsonEncoder(  ):
         jsonObject = dict()
         # execute recursive encryption
         for rawAttributKey,rawAttributValue in rawObject.items():
+            # INFO: in JSON, keys are always string when it can be everything in python
+            jsonKey=str(uuid4())
             encodedAttributKey = ComplexJsonEncoder.dumpComplexObject(rawAttributKey)
+            #surrogateAttributKey = DictionnaryKeySurrogate(encodedAttributKey)
             encodedAttributValue = ComplexJsonEncoder.dumpComplexObject(rawAttributValue)
-            jsonObject[encodedAttributKey]=encodedAttributValue
+            jsonObject[jsonKey]=[encodedAttributKey,encodedAttributValue]
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpDictionnaryObject.__name__ , message = jsonObject )
         # return
@@ -329,8 +349,9 @@ class ComplexJsonDecoder(  ):
         instantiatedObject = dict()
         # execute recursive encryption
         for rawAttributKey,rawAttributValue in rawObject.items():
-            instantiatedAttributKey = ComplexJsonDecoder.loadComplexObject(rawAttributKey)
-            instantiatedAttributValue = ComplexJsonDecoder.loadComplexObject(rawAttributValue)
+            instantiatedAttributPair = ComplexJsonDecoder.loadComplexObject(rawAttributValue)
+            instantiatedAttributKey=instantiatedAttributPair[0]
+            instantiatedAttributValue=instantiatedAttributPair[1]
             instantiatedObject[instantiatedAttributKey]=instantiatedAttributValue
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadDictionaryObject.__name__ , message = instantiatedObject )
