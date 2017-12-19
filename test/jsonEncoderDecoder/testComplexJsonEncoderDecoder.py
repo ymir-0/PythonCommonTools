@@ -152,7 +152,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         # create object
         # TODO: upgrade lists & set & map
         sampleBytes = b'\xf0\xf1\xf2'
-        sampleBytearray = bytearray.fromhex('2Ef0 F1f2  ')
+        sampleBytearray = bytearray(b'\xe3\xe4\xe5')
         sampleMemoryview = memoryview(b'abcefg')
         testObject=SampleBinary(sampleBytes,sampleBytearray,sampleMemoryview)
         # encode it
