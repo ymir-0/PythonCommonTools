@@ -113,7 +113,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleSequence(self):
         # create object
         # TODO: upgrade lists & set & map
-        sampleList = [0,1.2]
+        sampleList = [0,1.2]#complex(3,4)
         sampleTuple = (3,4.5)
         sampleRange = range(1,10)
         testObject=SampleSequence(sampleList,sampleTuple,sampleRange)

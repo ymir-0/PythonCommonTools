@@ -16,13 +16,16 @@ class EncryptionMarkup( Enum ):
     CLASS = "className"
     MODULE = "moduleName"
     SURROGATE_TYPE = "surrogateType"
+    @staticmethod
+    def listValues():
+        values=list()
+        for encryptionMarkup in EncryptionMarkup: values.append(encryptionMarkup.value)
+        return tuple(values)
 # serializable surrogate types
 #TODO: use a super class for all surrogate types ?
 class ComplexeSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=ComplexeSurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -35,9 +38,7 @@ class ComplexeSurrogate():
         self.imaginary=originalObject.imag
 class RangeSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=RangeSurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -50,9 +51,7 @@ class RangeSurrogate():
         self.end=originalObject[-1]+1 # WARNING : range end is exclusive
 class BytesSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=BytesSurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -64,9 +63,7 @@ class BytesSurrogate():
         self.integers=list(originalObject)
 class BytearraySurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=BytearraySurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -78,9 +75,7 @@ class BytearraySurrogate():
         self.integers=list(originalObject)
 class MemoryviewSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=MemoryviewSurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -141,28 +136,81 @@ class ComplexJsonEncoder(  ):
         # logger input
         logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = argsStr )
         # upgade object
-        # WARNING : can not 'deep copy' a 'memeory view'
-        ugradedObject = copy(rawObject)
-        # in all attributes
-        for attributeName, attributeValue in ugradedObject.__dict__.items():
-            # search for all unserializable ones
-            attributeType=type(attributeValue)
-            if attributeType in UNSERIALIZABLE_TYPES.keys():
-                # execute surrogate encryption
-                surrogateClass=UNSERIALIZABLE_TYPES[attributeType]
-                surrogateValue=surrogateClass(attributeValue)
-                jsonObject = dumps(surrogateValue.__dict__)
-                setattr(ugradedObject, attributeName, jsonObject)
+        # WARNING : can not (deep) copy a 'memory view'
+        if type(rawObject)==memoryview:
+            ugradedObject = memoryview(rawObject)
+        else:
+            ugradedObject = copy(rawObject)
+        # encode JSON primitive object
+        if type(rawObject) in (bool,int,float,str):
+            jsonObject = ComplexJsonEncoder.dumpJsonPrimitiveObject(rawObject)
+        # encode unserializable primitive object
+        elif type(rawObject) in UNSERIALIZABLE_TYPES.keys():
+            jsonObject = ComplexJsonEncoder.dumpUnserializablePrimitiveObject(rawObject)
+        # encode iterable object
+        elif type(rawObject) in (list,tuple):
+            jsonObject = ComplexJsonEncoder.dumpIterableObject(rawObject)
+        # encode complex object
+        else:
+            # encode all attributes
+            for attributeName, attributeValue in ugradedObject.__dict__.items():
+                jsonAttributValue=ComplexJsonEncoder.dumpComplexObject(attributeValue)
+                setattr(ugradedObject, attributeName, jsonAttributValue)
+                pass
+            # add module & class references
+            setattr(ugradedObject, EncryptionMarkup.CLASS.value, rawObject.__class__.__name__)
+            setattr(ugradedObject, EncryptionMarkup.MODULE.value, rawObject.__module__)
+            # encode object
+            jsonObject = dumps(ugradedObject.__dict__)
             pass
-        # add module & class references
-        setattr(ugradedObject, EncryptionMarkup.CLASS.value, rawObject.__class__.__name__)
-        setattr(ugradedObject, EncryptionMarkup.MODULE.value, rawObject.__module__)
-        # encode object
-        jsonObject = dumps(ugradedObject.__dict__)
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = jsonObject )
         # return
         return jsonObject
+    @staticmethod
+    def dumpJsonPrimitiveObject ( rawObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpJsonPrimitiveObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpJsonPrimitiveObject.__name__ , message = argsStr )
+        # encode identical
+        jsonObject = rawObject
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpJsonPrimitiveObject.__name__ , message = jsonObject )
+        # return
+        return jsonObject
+    @staticmethod
+    def dumpUnserializablePrimitiveObject ( rawObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpUnserializablePrimitiveObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = argsStr )
+        # encode with surrogate
+        rawObjectType = type(rawObject)
+        surrogateClass = UNSERIALIZABLE_TYPES[rawObjectType]
+        surrogateValue = surrogateClass(rawObject)
+        jsonObject = dumps(surrogateValue.__dict__)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = jsonObject )
+        # return
+        return jsonObject
+    @staticmethod
+    def dumpIterableObject ( rawObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpIterableObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = argsStr )
+        # initialize encoded attributs
+        jsonObject = list()
+        # execute recursive encryption
+        for rawAttributElement in rawObject:
+            encodedAttributElement = ComplexJsonEncoder.dumpComplexObject(rawAttributElement)
+            jsonObject.append(encodedAttributElement)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = jsonObject )
+        # return
+        return jsonObject
+    pass
 # decode from JSON to objects
 class ComplexJsonDecoder(  ):
     @staticmethod
@@ -171,42 +219,82 @@ class ComplexJsonDecoder(  ):
         argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadComplexObject ).parameters, locals() )
         # logger input
         logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = argsStr )
-        # load json object into dictionnary
-        dictObject = loads(jsonObject)
-        # initiate instantiated object
-        instantiatedObject=dictObject
-        # warn if was not encoded with 'ComplexJsonEncoder'
-        if EncryptionMarkup.CLASS.value not in dictObject or EncryptionMarkup.MODULE.value not in dictObject:
-            logger.loadedLogger.warning(__name__, ComplexJsonDecoder.__name__,ComplexJsonDecoder.loadComplexObject.__name__, message="This object was not encoded with 'ComplexJsonEncoder', so it will kept as dictionnary")
-        # otherwise, continue decoding
+        # decode JSON primitive object
+        jsonObjectType=type(jsonObject)
+        # f
+        stringComplexeFilterage=frozenset([encryptionMarkup in str(jsonObject) for encryptionMarkup in EncryptionMarkup.listValues()])
+        if jsonObjectType in (bool,int,float) or (jsonObjectType==str and True not in stringComplexeFilterage):
+            instantiatedObject = ComplexJsonDecoder.loadJsonPrimitiveObject(jsonObject)
+        # decode iterable object
+        elif jsonObjectType in (list,tuple):
+            instantiatedObject = ComplexJsonDecoder.loadIterableObject(jsonObject)
+        # decode complex object
         else:
-            # load class
-            loadedClass=loadClass(dictObject[EncryptionMarkup.MODULE.value], dictObject[EncryptionMarkup.CLASS.value])
-            # remove markups
-            del dictObject[EncryptionMarkup.MODULE.value]
-            del dictObject[EncryptionMarkup.CLASS.value]
-            # instanciate object
-            instantiatedObject=loadedClass()
-            # update class attributs
-            instantiatedObject.__dict__.update(dictObject)
-            # in all loaded attributes
-            for attributeName, attributeValue in instantiatedObject.__dict__.items():
-                # search the unserializable ones
-                if type(attributeValue)==str and EncryptionMarkup.SURROGATE_TYPE.value in attributeValue:
-                    # load surrogate class
-                    currentModule=__name__
-                    dictObject=loads(attributeValue)
-                    loadedClass = loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
-                    # replace in instanciated object
-                    instantiatedAttribute=loadedClass.convertToFinalObject(attributeValue)
-                    setattr(instantiatedObject, attributeName, instantiatedAttribute)
-                    pass
+            dictObject=loads(jsonObject)
+            # decode unserializable primitive object
+            if EncryptionMarkup.SURROGATE_TYPE.value in dictObject:
+                instantiatedObject = ComplexJsonDecoder.loadUnserializablePrimitiveObject(dictObject)
+            # decode real object
+            else:
+                # instanciate object
+                instantiationClass=loadClass(dictObject[EncryptionMarkup.MODULE.value], dictObject[EncryptionMarkup.CLASS.value])
+                instantiatedObject=instantiationClass()
+                # remove markups
+                del dictObject[EncryptionMarkup.MODULE.value]
+                del dictObject[EncryptionMarkup.CLASS.value]
+                # instanciate all attributes recursively
+                for attributeName, attributeValue in dictObject.items():
+                    instantiatedAttributValue = ComplexJsonDecoder.loadComplexObject(attributeValue)
+                    setattr(instantiatedObject, attributeName, instantiatedAttributValue)
                 pass
-            pass
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
         # return instantiated object
         return instantiatedObject
+    @staticmethod
+    def loadJsonPrimitiveObject ( jsonObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpJsonPrimitiveObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpJsonPrimitiveObject.__name__ , message = argsStr )
+        # decode identical
+        instantiatedObject = jsonObject
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpJsonPrimitiveObject.__name__ , message = instantiatedObject )
+        # return
+        return instantiatedObject
+    @staticmethod
+    def loadUnserializablePrimitiveObject ( dictObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpUnserializablePrimitiveObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = argsStr )
+        # load class
+        instantiationClass = loadClass(__name__,dictObject[EncryptionMarkup.SURROGATE_TYPE.value])
+        # decode with surrogate
+        instantiatedObject=instantiationClass.convertToFinalObject(dictObject)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpUnserializablePrimitiveObject.__name__ , message = instantiatedObject )
+        # return
+        return instantiatedObject
+    @staticmethod
+    def loadIterableObject ( jsonObject ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpIterableObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = argsStr )
+        # initialize decode attributs
+        instantiatedObject = list()
+        # execute recursive decode
+        for rawAttributElement in jsonObject:
+            encodedAttributElement = ComplexJsonDecoder.loadComplexObject(rawAttributElement)
+            instantiatedObject.append(encodedAttributElement)
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpIterableObject.__name__ , message = instantiatedObject )
+        # return
+        return instantiatedObject
+    pass
+    pass
 def loadClass(moduleName,className):
     # logger context
     argsStr = methodArgsStringRepresentation(signature(loadClass).parameters, locals())
