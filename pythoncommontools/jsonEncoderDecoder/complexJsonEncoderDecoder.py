@@ -88,9 +88,7 @@ class MemoryviewSurrogate():
         self.integers=list(originalObject)
 class SetSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=SetSurrogate()
         surrogateObject.__dict__.update(dictObject)
@@ -103,9 +101,7 @@ class SetSurrogate():
         self.list=list(originalObject)
 class FrozensetSurrogate():
     @staticmethod
-    def convertToFinalObject(jsonEncryption):
-        # load it in a dictionnary
-        dictObject = loads(jsonEncryption)
+    def convertToFinalObject(dictObject):
         # update the attributes
         surrogateObject=FrozensetSurrogate()
         surrogateObject.__dict__.update(dictObject)
