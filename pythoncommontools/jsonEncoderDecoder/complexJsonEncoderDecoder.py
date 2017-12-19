@@ -1,6 +1,7 @@
 # coding=utf-8
 # @see : https://pymotw.com/2/json/ (it is for python 2, but it is adaptable for python 3)
 # imports
+from abc import ABC, abstractmethod
 from copy import  copy
 from enum import Enum , unique
 from importlib import import_module
@@ -22,8 +23,11 @@ class EncryptionMarkup( Enum ):
         for encryptionMarkup in EncryptionMarkup: values.append(encryptionMarkup.value)
         return tuple(values)
 # serializable surrogate types
-#TODO: use a super class for all surrogate types ?
-class ComplexeSurrogate():
+class AbstractSurrogate(ABC):
+    @abstractmethod
+    def convertToFinalObject(self):
+        pass
+class ComplexeSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -36,7 +40,7 @@ class ComplexeSurrogate():
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, ComplexeSurrogate.__name__)
         self.real=originalObject.real
         self.imaginary=originalObject.imag
-class RangeSurrogate():
+class RangeSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -49,7 +53,7 @@ class RangeSurrogate():
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, RangeSurrogate.__name__)
         self.start=originalObject[0]
         self.end=originalObject[-1]+1 # INFO : range end is exclusive
-class BytesSurrogate():
+class BytesSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -61,7 +65,7 @@ class BytesSurrogate():
     def __init__(self,originalObject=bytes()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytesSurrogate.__name__)
         self.integers=list(originalObject)
-class BytearraySurrogate():
+class BytearraySurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -73,7 +77,7 @@ class BytearraySurrogate():
     def __init__(self,originalObject=bytearray()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, BytearraySurrogate.__name__)
         self.integers=list(originalObject)
-class MemoryviewSurrogate():
+class MemoryviewSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -86,7 +90,7 @@ class MemoryviewSurrogate():
     def __init__(self,originalObject=memoryview(b'')):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, MemoryviewSurrogate.__name__)
         self.integers=list(originalObject)
-class SetSurrogate():
+class SetSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
@@ -98,7 +102,7 @@ class SetSurrogate():
     def __init__(self,originalObject=set()):
         setattr(self, EncryptionMarkup.SURROGATE_TYPE.value, SetSurrogate.__name__)
         self.list=list(originalObject)
-class FrozensetSurrogate():
+class FrozensetSurrogate(AbstractSurrogate):
     @staticmethod
     def convertToFinalObject(dictObject):
         # update the attributes
