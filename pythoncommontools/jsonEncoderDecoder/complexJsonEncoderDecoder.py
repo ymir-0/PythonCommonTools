@@ -10,6 +10,7 @@ from uuid import uuid4
 from pythoncommontools.logger import logger
 from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
 # encryption markup
+NONE="null"
 @unique
 class EncryptionMarkup( Enum ):
     CLASS = "className"
@@ -133,8 +134,11 @@ class ComplexJsonEncoder(  ):
             ugradedObject = memoryview(rawObject)
         else:
             ugradedObject = copy(rawObject)
+        # encode None object
+        if rawObject is None:
+            jsonObject = ComplexJsonEncoder.dumpNoneObject()
         # encode JSON primitive object
-        if type(rawObject) in (bool,int,float,str):
+        elif type(rawObject) in (bool,int,float,str):
             jsonObject = ComplexJsonEncoder.dumpJsonPrimitiveObject(rawObject)
         # encode unserializable primitive object
         elif type(rawObject) in UNSERIALIZABLE_TYPES.keys():
@@ -160,6 +164,18 @@ class ComplexJsonEncoder(  ):
             pass
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpComplexObject.__name__ , message = jsonObject )
+        # return
+        return jsonObject
+    @staticmethod
+    def dumpNoneObject (  ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonEncoder.dumpNoneObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpNoneObject.__name__ , message = argsStr )
+        # encode identical
+        jsonObject = NONE
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonEncoder.__name__ ,ComplexJsonEncoder.dumpNoneObject.__name__ , message = jsonObject )
         # return
         return jsonObject
     @staticmethod
@@ -241,8 +257,11 @@ class ComplexJsonDecoder(  ):
         jsonObjectType=type(jsonObject)
         # filter the kind of string : primitive or complexe
         stringComplexeFilterage=frozenset([encryptionMarkup in str(jsonObject) for encryptionMarkup in EncryptionMarkup.listValues()])
+        # decode None object
+        if jsonObject==NONE:
+            instantiatedObject = ComplexJsonDecoder.loadNoneObject()
         # decode JSON primitive object
-        if jsonObjectType in (bool,int,float) or (jsonObjectType==str and True not in stringComplexeFilterage):
+        elif jsonObjectType in (bool,int,float) or (jsonObjectType==str and True not in stringComplexeFilterage):
             instantiatedObject = ComplexJsonDecoder.loadJsonPrimitiveObject(jsonObject)
         # decode iterable object
         elif jsonObjectType in (list,tuple):
@@ -272,6 +291,18 @@ class ComplexJsonDecoder(  ):
         # logger output
         logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadComplexObject.__name__ , message = instantiatedObject )
         # return instantiated object
+        return instantiatedObject
+    @staticmethod
+    def loadNoneObject (  ):
+        # logger context
+        argsStr = methodArgsStringRepresentation( signature( ComplexJsonDecoder.loadNoneObject ).parameters,locals() )
+        # logger input
+        logger.loadedLogger.input ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadNoneObject.__name__ , message = argsStr )
+        # encode identical
+        instantiatedObject = None
+        # logger output
+        logger.loadedLogger.output ( __name__ , ComplexJsonDecoder.__name__ ,ComplexJsonDecoder.loadNoneObject.__name__ , message = instantiatedObject )
+        # return
         return instantiatedObject
     @staticmethod
     def loadJsonPrimitiveObject ( jsonObject ):

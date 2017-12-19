@@ -113,13 +113,13 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleSequence(self):
         # create object
         # TODO: upgrade lists & set & map
-        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij')))
-        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd')))
-        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),
+        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij'),None))
+        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd'),None))
+        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),None,
                      innerSampleSet,innerSampleFrozenset]
-        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr'),innerSampleFrozenset))
-        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),innerSampleFrozenset))
-        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),
+        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr'),None,innerSampleFrozenset))
+        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),None,innerSampleFrozenset))
+        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),None,
                       innerList,sampleSet,sampleFrozenset]
         #TODO: test inner tuple
         sampleTuple = (3,4.5)
@@ -182,9 +182,9 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
         # create object
         # INFO : some object are not hashable, so can not be in a (frozen)set : bytearray, list, set
         # TODO: upgrade lists & set
-        innerFrozenset = frozenset((True,3,2.6,complex(1,9),b'\x3e\x4e\x5e',memoryview(b'wqazsxc')))
-        sampleSet = set((True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg'),innerFrozenset))
-        sampleFrozenset = frozenset((True,9,8.7,complex(6,5),b'\xe3\xe4\xe5',memoryview(b'azerty'),innerFrozenset))
+        innerFrozenset = frozenset((True,3,2.6,complex(1,9),b'\x3e\x4e\x5e',memoryview(b'wqazsxc'),None))
+        sampleSet = set((True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',memoryview(b'abcefg'),None,innerFrozenset))
+        sampleFrozenset = frozenset((True,9,8.7,complex(6,5),b'\xe3\xe4\xe5',memoryview(b'azerty'),None,innerFrozenset))
         testObject=SampleSet(sampleSet,sampleFrozenset)
         # encode it
         testJson=ComplexJsonEncoder.dumpComplexObject(testObject)
@@ -202,17 +202,18 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
     def testSampleDictionnary(self):
         # create object
         # TODO: upgrade lists & set & map
-        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij')))
-        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd')))
-        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),
+        innerSampleSet = set((True,7,4.8,complex(1,5),b'\x1a\x2b\x3c',memoryview(b'mplokij'),None))
+        innerSampleFrozenset = frozenset((True,9,2.6,complex(3,0),b'\x4d\x5e\x6f',memoryview(b'wqaxszcd'),None))
+        innerList = [False,5,6.7,complex(8,9),b'\x0f\x1f\x2f',bytearray(b'\x3e\x4e\x5e'),memoryview(b'azerty'),None,
                      innerSampleSet,innerSampleFrozenset]
-        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr')))
-        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf')))
-        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),
+        sampleSet = set((True,3,2.6,complex(1,5),b'\xa1\xb2\xc3',memoryview(b'poiuytr'),None))
+        sampleFrozenset = frozenset((True,9,4.8,complex(7,0),b'\xd4\xe5\xf6',memoryview(b'mlkjhgf'),None))
+        sampleList = [True,0,1.2,complex(3,4),b'\xf0\xf1\xf2',bytearray(b'\xe3\xe4\xe5'),memoryview(b'abcefg'),None,
                       innerList,sampleSet,sampleFrozenset]
         # INFO : some object are not hashable, so can not be in dictionnary key : bytearray, list, set
         innerDictionnary = {
             False:True,
+            True: None,
             'a': 9,
             'b': 8.7,
             'c': complex(6,5),
@@ -222,6 +223,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             'g': memoryview(b'abcefg'),
             'h': innerList,
             #'i': (3,4.5),
+            'j': None,
             0: 9,
             1: 8.7,
             2: complex(6, 5),
@@ -231,6 +233,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             6: memoryview(b'abcefg'),
             7: innerList,
             # 8: (3,4.5),
+            9: None,
             10.: 9,
             9.1: 8.7,
             8.2: complex(6, 5),
@@ -240,6 +243,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             4.6: memoryview(b'abcefg'),
             3.7: innerList,
             # 8: (3,4.5),
+            1.9: None,
             complex(1,0): 9,
             complex(9,1): 8.7,
             complex(8,2): complex(6, 5),
@@ -249,6 +253,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             complex(4,6): memoryview(b'abcefg'),
             complex(3,7): innerList,
             # complex(8: (3,4.5),
+            complex(2, 8): None,
             b'az': 9,
             b'by': 8.7,
             b'cx': complex(6, 5),
@@ -258,6 +263,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             b'gt': memoryview(b'abcefg'),
             b'hs': innerList,
             # 'i': (3,4.5),
+            b'hy': None,
             memoryview(b'er'): 1,
             memoryview(b'ty'): 2.3,
             memoryview(b'ui'): complex(4, 5),
@@ -267,6 +273,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             memoryview(b'gh'): memoryview(b'abcefg'),
             memoryview(b'jk'): sampleList,
             # 'ir': (3,4.5),
+            memoryview(b'wx'): None,
             frozenset([0, 1]): 1,
             frozenset([2.0, 3.1]): 2.3,
             frozenset([complex(0, 1), complex(2, 3)]): complex(4, 5),
@@ -276,9 +283,11 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             frozenset([memoryview(b'eswascz'), memoryview(b'plmoijk')]): memoryview(b'abcefg'),
             frozenset([2, 3]): sampleList,
             # tuple(X): (3,4.5),
+            frozenset([None]): None,
         }
         sampleDictionnary = {
             True:False,
+            False: None,
             'a': 1,
             'b': 2.3,
             'c': complex(4,5),
@@ -289,6 +298,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             'h': sampleList,
             #'i': (3,4.5),
             'k': innerDictionnary,
+            'l': None,
             0: 1,
             1: 2.3,
             2: complex(4,5),
@@ -299,6 +309,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             7: sampleList,
             #8: (3,4.5),
             10: innerDictionnary,
+            11: None,
             10.: 1,
             9.1: 2.3,
             8.2: complex(4, 5),
@@ -309,6 +320,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             3.7: sampleList,
             # 2: (3,4.5),
             0.1: innerDictionnary,
+            1.0: None,
             complex(1,0): 1,
             complex(9,1): 2.3,
             complex(8,2): complex(4, 5),
@@ -318,7 +330,8 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             complex(4,6): memoryview(b'abcefg'),
             complex(3,7): sampleList,
             # complex(2: (3,4.5),
-            complex(0,1): innerDictionnary,
+            complex(1,9): innerDictionnary,
+            complex(1, 0): None,
             b'az': 1,
             b'by': 2.3,
             b'cx': complex(4, 5),
@@ -329,6 +342,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             b'hs': sampleList,
             # 'ir': (3,4.5),
             b'ju': innerDictionnary,
+            b'nb': None,
             memoryview(b'er'): 1,
             memoryview(b'ty'): 2.3,
             memoryview(b'ui'): complex(4, 5),
@@ -339,6 +353,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             memoryview(b'jk'): sampleList,
             # 'ir': (3,4.5),
             memoryview(b'lm'): innerDictionnary,
+            memoryview(b'wx'): None,
             frozenset([0,1]): 1,
             frozenset([2.0,3.1]): 2.3,
             frozenset([complex(0, 1),complex(2, 3)]): complex(4, 5),
@@ -349,6 +364,7 @@ class testComplexJsonEncoderDecoder(unittest.TestCase):
             frozenset([2,3]): sampleList,
             # tuple(X): (3,4.5),
             frozenset({'jack': 4098, 12.3: complex(41,39)}): innerDictionnary,
+            frozenset([None]): None,
         }
         testObject=SampleDictionnary(sampleDictionnary)
         # encode it
