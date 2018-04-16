@@ -5,7 +5,7 @@ from configparser import ConfigParser
 loadedConfiguration = None
 # read configuration
 def loadConfiguration( configurationFilePath ):
-	global loadedConfiguration
-	if not loadedConfiguration:
-		loadedConfiguration = ConfigParser ( )
-		loadedConfiguration.read( configurationFilePath )
+    global loadedConfiguration
+    if not loadedConfiguration:
+        loadedConfiguration = ConfigParser ( )
+        loadedConfiguration.read( configurationFilePath )
