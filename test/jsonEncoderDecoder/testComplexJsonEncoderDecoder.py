@@ -2,17 +2,7 @@
 # PY test script file name must start with "test" to allow automatic recognition by PyCharm
 # import
 import unittest
-from os import sep
-from os.path import join, realpath
-from pythoncommontools.configurationLoader import configurationLoader
-from pythoncommontools.logger import logger
 from pythoncommontools.jsonEncoderDecoder.complexJsonEncoderDecoder import ComplexJsonEncoder,ComplexJsonDecoder
-# contants
-CURRENT_DIRECTORY = realpath(__file__).rsplit(sep, 1)[0]
-CONFIGURATION_FILE=join(CURRENT_DIRECTORY,"..","..","pythoncommontools","conf","pythoncommontools.conf")
-# load configuration
-configurationLoader.loadConfiguration(CONFIGURATION_FILE)
-logger.loadLogger("surrogate types", CONFIGURATION_FILE)
 # create sample classes to encode/decode
 class SampleBoolean():
     # sample function

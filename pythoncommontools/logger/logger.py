@@ -3,9 +3,14 @@
 HELP : to use this feature :
  - copy configuration sample file into your configuration directory
  - edit this configuration file (help links inside)
- - import module : from pythoncommontools.logger import logger
+ - import modules :
+    - from inspect import signature
+    - from pythoncommontools.objectUtil.objectUtil import methodArgsStringRepresentation
+    - from pythoncommontools.logger import logger
  - in method or function :
-    - collect inputs arguments : argsStr = methodArgsStringRepresentation( signature( <CLASS>.<METHOD> ).parameters,locals() )
+    - collect inputs arguments :
+       - argsStr = methodArgsStringRepresentation( signature( <CLASS>.<METHOD> ).parameters,locals() )
+       - argsStr = methodArgsStringRepresentation( signature( FUNCTION ).parameters, locals() )
     - use logger methods :
        - logger.loadedLogger.input ( __name__ , <CLASS>.__name__ ,<CLASS>.<METHOD>.__name__ , message = argsStr )
        - logger.loadedLogger.output ( __name__ , <CLASS>.__name__ ,<CLASS>.<METHOD>.__name__ , message = output )
