@@ -1,4 +1,17 @@
 # coding=utf-8
+'''
+HELP : to use this feature :
+ - copy configuration sample file into your configuration directory
+ - edit this configuration file (help links inside)
+ - import module : from pythoncommontools.logger import logger
+ - in method or function :
+    - collect inputs arguments : argsStr = methodArgsStringRepresentation( signature( <CLASS>.<METHOD> ).parameters,locals() )
+    - use logger methods :
+       - logger.loadedLogger.input ( __name__ , <CLASS>.__name__ ,<CLASS>.<METHOD>.__name__ , message = argsStr )
+       - logger.loadedLogger.output ( __name__ , <CLASS>.__name__ ,<CLASS>.<METHOD>.__name__ , message = output )
+       - logger.loadedLogger.input ( __name__ , functionOrmethod = FUNCTION.__name__ , message = argsStr )
+       - logger.loadedLogger.output ( __name__ , functionOrmethod = FUNCTION.__name__ , message = output  )
+'''
 # imports
 import logging
 from logging import Logger as DefaultLogger
