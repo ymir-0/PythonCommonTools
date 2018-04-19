@@ -31,14 +31,38 @@ def objectHash( objectToHash ):
     # compute and return hash
     hashedObject = hash ( objectFrozenSet )
     return hashedObject
-def objectComparison( objectOriginal, objectModel ):
-    comparison = type( objectOriginal ) == type( objectModel )
+#INFO : some objects (ie numpy array) are not hashable, so we can not compare object just by comparing hashes
+def objectComparison( originalObject, modelObject ):
+    comparison = type( originalObject ) == type( modelObject )
     if comparison:
-        # dictionarize original & model objects
-        objectOriginalDict = convertObjetTodict( objectOriginal )
-        objectModelDict = convertObjetTodict( objectModel )
-        # compare & return objects
-        comparison = objectOriginalDict == objectModelDict
+        # dictionarize original & model objects and compare them
+        originalObjectDict = convertObjetTodict( originalObject )
+        modelObjectDict = convertObjetTodict( modelObject )
+        attributes = originalObjectDict.keys()
+        comparison = attributes==modelObjectDict.keys()
+        # compare each attribute
+        if comparison:
+            for attribute in list(attributes):
+                # get attributes values
+                originalAttributeValue = getattr(originalObject, attribute)
+                modelAttribute = getattr(modelObject, attribute)
+                # if values are iterable, check each one
+                # INFO : python refuse to compare embedded lists
+                if hasattr(originalAttributeValue, '__iter__'):
+                    for index,element in enumerate(originalAttributeValue):
+                        comparison = element==modelAttribute[index]
+                        # some objects (ie numpy array) return boolean list
+                        if hasattr(comparison, '__iter__'): comparison = (False not in comparison)
+                        # stop comparison if any difference
+                        if not comparison : break
+                    pass
+                # otherwise, do basic comparison
+                else: comparison = originalAttributeValue == modelAttribute
+                # stop comparison if any difference
+                if not comparison : break
+            pass
+        pass
+    # return
     return comparison
 def objectStringRepresentation( objectToStr ):
     # dictiarize object
